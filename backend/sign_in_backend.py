@@ -21,6 +21,7 @@ class SignInBackend:
             SignInBackend.__instance = self
 
     def signUpVerification(self, loginInfo):
+        print('signup', loginInfo)
         username = loginInfo['username']
         isTutor = loginInfo['isTutor']
 
@@ -35,9 +36,8 @@ class SignInBackend:
 
         # checking that the username does not exists
         query = {"username": username}
-        output = collection.find(query)
 
-        if output.count_documents() != 0:
+        if collection.count_documents(query) != 0:
             return False
 
         del loginInfo['isTutor']
@@ -59,6 +59,7 @@ class SignInBackend:
         query = {"username": username}
         if isTutor:
             output = mongo.tutorsData.find(query)
+
         else:
             output = mongo.parentsData.find(query)
 

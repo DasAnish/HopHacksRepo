@@ -10,22 +10,20 @@ import pandas as pd
 from kivy.core.window import Window
 import hashlib
 from kivy.uix.checkbox import CheckBox
+from backend import Backend
 
-
-# class to call the popup function
-class PopupWindow(Widget):
-    def btn(self):
-        popFun()
 
 
 # class to build GUI for a popup window
 class P(FloatLayout):
     pass
 
+class P1(FloatLayout):
+    pass
 
-# function that displays the content
-def popFun():
-    show = P()
+#
+def popFun(message):
+    show = message()
     window = Popup(title="Warning", content=show,
                    size_hint=(None, None), size=(300, 150))
     window.open()
@@ -50,13 +48,13 @@ class ChooseWindow(Screen):
 class LoginWindow(Screen):
     username = ObjectProperty(None)
     pwd = ObjectProperty(None)
-    is_tutor = ObjectProperty(None)
+    isTutor = ObjectProperty(None)
 
     def checkbox_click(self, instance, value):
         if value == True:
-            self.is_tutor = True
+            self.isTutor = True
         else:
-            self.is_tutor = False
+            self.isTutor = False
 
     def validate(self):
 
@@ -64,7 +62,7 @@ class LoginWindow(Screen):
         if self.username.text not in users['username'].unique():
             print(self.username.text)
             print(users['username'].unique())
-            popFun()
+            popFun(P)
         # elif self.username.text in users['username'].unique() and self.pwd.text != users:
         #     raise Exception('Not Implemented')
         else:
@@ -83,13 +81,13 @@ class SignupWindow(Screen):
     phone = ObjectProperty(None)
     fname = ObjectProperty(None)
     lname = ObjectProperty(None)
-    is_tutor = ObjectProperty(None)
+    isTutor = ObjectProperty(None)
 
     def checkbox_click(self, instance, value):
         if value == True:
-            self.is_tutor = True
+            self.isTutor = True
         else:
-            self.is_tutor = False
+            self.isTutor = False
 
     def signup(self):
 
@@ -98,24 +96,24 @@ class SignupWindow(Screen):
                             columns=['username', 'password', 'phoneNum', 'fname', 'lname'])
         user = user.replace(r'^\s*$', np.NAN, regex=True)
         if user.isnull().sum().sum() == 0:
-            if self.username.text not in users['username'].unique():
-                # change password to hash
-                tempdict = user.to_dict('list')
-                for key in tempdict:
-                    tempdict[key] = tempdict[key][0]
-                tempdict['password'] = passwordHash(tempdict['password']).hex()
-                tempdict['is_tutor'] = self.is_tutor is not None
-                '''need to complete, verification '''
-                print(tempdict)
+            # change password to hash
+            tempdict = user.to_dict('list')
+            for key in tempdict:
+                tempdict[key] = tempdict[key][0]
+            tempdict['password'] = passwordHash(tempdict['password']).hex()
+            tempdict['isTutor'] = self.isTutor is not None
+            if Backend.signUpVerification(tempdict):
                 sm.current = 'login'
                 self.username.text = ""
                 self.pwd.text = ""
                 self.phone.text = ""
                 self.fname.text = ""
                 self.lname.text = ""
+            else:
+                popFun(P1)
         else:
             # if values are empty or invalid show pop up
-            popFun()
+            popFun(P)
 
 
 # class to display validation result
