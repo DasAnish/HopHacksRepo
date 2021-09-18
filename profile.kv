@@ -1,0 +1,26 @@
+<ProfilePicture>
+    id: profile_pic
+    BoxLayout:
+        oreintation: "vertical"
+        size: root.width, root.height
+
+        Button:
+            id: pic
+            background_normal : ''
+            on_press: root.pop()
+
+        FileChooserIconView:
+            id: filechooser
+            on_selection: profile_pic.selected(filechooser.selection)
+
+<P>
+    BoxLayout:
+        orientation: "vertical"
+        Label:
+            text: "Are you sure you want to exit?"
+        BoxLayout:
+            size_hint_y: 0.3
+            Button:
+                text: "Yes"
+            Button:
+                text: "No"
