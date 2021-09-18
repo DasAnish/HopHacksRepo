@@ -14,6 +14,7 @@ from kivy.graphics import RoundedRectangle
 
 Builder.load_file("kivyFiles/main.kv")
 
+
 #fadeInFull = Animation(opacity = 1, duration = 0.4)
 #fadeOut = Animation(opacity = 0, duration = 0.4)
 
@@ -40,10 +41,12 @@ class ChangePageButton(Button):
         self.background_normal = source
         self.background_down = source.replace(".png", "") + "Down" + ".png"
         self.bind(on_press=self.pressed)
+
     def pressed(self, instance):
         app = App.get_running_app()
         PM = app.root
         PM.goToPage(self.page)
+
 
 class FadeBetweenButton(Button):
     def __init__(self, images, pos, size, **kwargs):
@@ -67,6 +70,7 @@ class FadeBetweenButton(Button):
 class SignInPage(Widget):
     def __init__(self, **kwargs):
         super(SignInPage, self).__init__(**kwargs)
+
 
 class ParentHomePage(Widget):
     def __init__(self, **kwargs):
@@ -104,6 +108,7 @@ class ParentHomePage(Widget):
         self.add_widget(yesButton)
 
 
+
 class TutorHomePage(Widget):
     def __init__(self, **kwargs):
         super(TutorHomePage, self).__init__(**kwargs)
@@ -116,6 +121,7 @@ class TutorHomePage(Widget):
             startPos = (startPos[0], startPos[1] - AddTextWithBack(requests[i], infoToDisplay[i], startPos) - pad)
             self.add_widget(requests[i])
 
+
 class ParentProfile(Widget):
     def __init__(self, **kwargs):
         super(ParentProfile, self).__init__(**kwargs)
@@ -123,6 +129,7 @@ class ParentProfile(Widget):
                               size=(Window.width - 20, Window.height - 90))
         img.texture = img.texture.get_region(0, 0, img.texture_size[0], img.texture_size[0] * 550 / 340)
         self.add_widget(img)
+
 
 class TutorProfile(Widget):
     def __init__(self, **kwargs):
@@ -133,6 +140,7 @@ class PageManager(Widget):
     SIGNIN = 0
     HOME = 1
     PROFILE = 3
+
     def __init__(self, **kwargs):
         super(PageManager, self).__init__(**kwargs)
         self.size = (360, 640)
@@ -155,11 +163,14 @@ class PageManager(Widget):
         self.currentPage = page
         self.add_widget(self.pages[self.currentPage])
 
+
 class MainApp(App):
     def build(self):
         return PageManager()
 
 
-Window.size = (360, 640)
-Config.set('graphics', 'resizable', False)
-MainApp().run()
+if __name__ == '__main__':
+
+    Window.size = (360, 640)
+    Config.set('graphics', 'resizable', False)
+    MainApp().run()
