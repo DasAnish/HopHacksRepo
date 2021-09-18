@@ -3,6 +3,8 @@ from .parents_profile_backend import ParentsProfileBackend
 from .tutor_profile_backend import TutorProfileBackend
 from .tutor_home_backend import TutorHomeBackend
 from .sign_in_backend import SignInBackend
+from .connect_with_mongo import Mongo
+from .dataObjects import *
 
 
 class Backend:

@@ -27,18 +27,3 @@ class Mongo:
         self.tutorsData = self.client['HopHacks']['Tutors']
         self.matchesData = self.client['HopHacks']['Matches']
 
-
-# def do():
-#
-#     uri = "mongodb+srv://cluster0.d7bvv.mongodb.net/myFirstDatabase?authSource=%24external&authMechanism=MONGODB-X509&retryWrites=true&w=majority"
-#     client = pymongo.MongoClient(uri,
-#                          tls=True,
-#                          tlsCertificateKeyFile='../X509-cert-6197396631610520216.pem')
-#     db = client['HopHacks']
-#     collection = db['Matches']
-#     doc_count = collection.count_documents({})
-#     print(doc_count)
-#
-#
-# if __name__ == '__main__':
-#     do()
