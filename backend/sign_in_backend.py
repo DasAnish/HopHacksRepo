@@ -1,5 +1,5 @@
-from backend import Mongo
-from backend import Parent, Tutor
+from .connect_with_mongo import Mongo
+from .dataObjects import Parent, Tutor
 
 
 class SignInBackend:
