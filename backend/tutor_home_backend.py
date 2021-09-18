@@ -1,3 +1,6 @@
+from .dataObjects import Tutor, Parent, Match
+from .connect_with_mongo import Mongo
+
 
 class TutorHomeBackend:
 
@@ -16,6 +19,28 @@ class TutorHomeBackend:
 
         else:
             TutorHomeBackend.__instance = self
+
+    def getMatches(self, tutor: Tutor, statusOfMatch):
+
+        query = {'tutor_id': tutor.id,
+                 'status': statusOfMatch}
+
+        listOfMatches = []
+
+        mongo = Mongo.getInstance()
+        for obj in mongo.matchesData.find(query):
+            parent_id = obj['parent_id']
+            parentInfo = mongo.parentsData.find_one({'_id':parent_id})[0]
+            parentObj = Parent(parent_id)
+            parentObj.updateInfo(parentInfo)
+
+            matchObj = Match(parentObj, tutor)
+            matchObj.id = obj['_id']
+            matchObj.status = obj['status']
+
+            listOfMatches.append(matchObj)
+
+        return matchObj
 
     def accept(self, match):
         raise Exception("not implemented")
