@@ -124,11 +124,11 @@ class Match:
 
     REQUESTED, ACCEPTED, REJECTED = 0, 1, 2
 
-    def __init__(self, id, parent, tutor):
-        self.id = id
+    def __init__(self, parent, tutor):
+        self.id = 0
 
-        self.parent_id = parent
-        self.tutor_id = tutor
+        self.parent = parent
+        self.tutor = tutor
 
         self.status = Match.REQUESTED
 

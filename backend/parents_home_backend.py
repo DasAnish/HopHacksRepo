@@ -23,7 +23,11 @@ class ParentsHomeBackend:
         self.cursor = None
 
     def sendLike(self, match: Match):
-        pass
+        mongo = Mongo.getInstance()
+        id = mongo.matchesData.insert_one({'parent_id': match.parent.id,
+                                           'tutor_id': match.tutor.id,
+                                           'status': Match.REQUESTED})
+        match.id = id
 
     def sendDislike(self, match: Match):
         pass

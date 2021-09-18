@@ -10,8 +10,12 @@ from .dataObjects import *
 class Backend:
 
     @staticmethod
+    def getMatches(tutor):
+        return TutorHomeBackend.getInstance().getMatches(tutor)
+
+    @staticmethod
     def nextTutor():
-        ParentsHomeBackend.getInstance().nextTutor()
+        return ParentsHomeBackend.getInstance().nextTutor()
 
     @staticmethod
     def sendLike(match):
