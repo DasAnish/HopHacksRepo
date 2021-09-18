@@ -1,3 +1,5 @@
+from .dataObjects import Tutor
+from .connect_with_mongo import Mongo
 
 class TutorProfileBackend:
 
@@ -17,5 +19,7 @@ class TutorProfileBackend:
         else:
             TutorProfileBackend.__instance = self
 
-    def updateInfo(self, info):
-        raise Exception("not implemented")
+    def updateInfo(self, tutorObj: Tutor, info):
+        tutorObj.updateInfo(info)
+
+        mongo = Mongo.getInstance()

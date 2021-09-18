@@ -18,20 +18,20 @@ class Backend:
         ParentsHomeBackend.getInstance().sendDislike(match)
 
     @staticmethod
-    def updateParentInfo(info):
-        ParentsProfileBackend.getInstance().updateInfo(info)
+    def updateParentInfo(parentObj, info):
+        ParentsProfileBackend.getInstance().updateInfo(parentObj, info)
 
     @staticmethod
-    def updateTutorInfo(info):
-        TutorProfileBackend.getInstance().updateInfo(info)
+    def updateTutorInfo(tutorObj, info):
+        TutorProfileBackend.getInstance().updateInfo(tutorObj, info)
 
     @staticmethod
     def signUpVerification(loginInfo):
-        SignInBackend.getInstance().signUpVerification(loginInfo)
+        return SignInBackend.getInstance().signUpVerification(loginInfo)
 
     @staticmethod
     def signInVerification(loginInfo):
-        SignInBackend.getInstance().signInVerification(loginInfo)
+        return SignInBackend.getInstance().signInVerification(loginInfo)
 
     @staticmethod
     def accept(match):
