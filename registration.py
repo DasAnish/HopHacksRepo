@@ -61,7 +61,9 @@ class LoginWindow(Screen):
     def validate(self):
         # validating if the username already exists
         tempdict = {"username": self.username.text, "password": self.pwd.text, "isTutor": self.isTutor is not None}
-        if not Backend.signInVerification(tempdict):
+        tempdict['password'] = passwordHash(tempdict['password']).hex()
+        print(tempdict['password'])
+        if Backend.signInVerification(tempdict) == 0:
             popFun(P2)
         else:
             # switching the current screen to display validation result
