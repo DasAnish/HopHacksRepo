@@ -9,17 +9,29 @@ class Person:
 
     def __init__(self):
 
-        self.name = ''
+        self.username = ''
+        self.password = ''
+        self.fname = ''
+        self.lname = ''
         self.subject = []
-        self.rateMin =0
-        self.rateMax =0
+        self.rateMin = 0
+        self.rateMax = 0
         self.location = None
         self.phoneNum = 0
         self.level = -1
 
     def baseUpdateInfo(self, info):
-        if 'name' in info:
-            self.name = info['name']
+        if 'username' in info:
+            self.username = info['username']
+
+        if 'password' in info:
+            self.password = info['password']
+
+        if 'fname' in info:
+            self.fname = info['fname']
+
+        if 'lname' in info:
+            self.lname = info['lname']
 
         if 'subject' in info:
             self.subject = info['subject']
@@ -41,7 +53,10 @@ class Person:
 
     def baseToDict(self):
         output = {
-            "name": self.name,
+            "username": self.username,
+            "password": self.password,
+            "fname": self.fname,
+            "lname": self.lname,
             "subject": self.subject,
             'rateMin': self.rateMin,
             'rateMax': self.rateMax,
