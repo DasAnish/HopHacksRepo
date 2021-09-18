@@ -26,8 +26,12 @@ class Backend:
         TutorProfileBackend.getInstance().updateInfo(info)
 
     @staticmethod
-    def verify(loginInfo):
-        SignInBackend.getInstance().verify(loginInfo)
+    def signUpVerification(loginInfo):
+        SignInBackend.getInstance().signUpVerification(loginInfo)
+
+    @staticmethod
+    def signInVerification(loginInfo):
+        SignInBackend.getInstance().signInVerification(loginInfo)
 
     @staticmethod
     def accept(match):

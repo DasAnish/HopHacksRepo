@@ -26,4 +26,3 @@ class Mongo:
         self.parentsData = self.client['HopHacks']['Parents']
         self.tutorsData = self.client['HopHacks']['Tutors']
         self.matchesData = self.client['HopHacks']['Matches']
-
