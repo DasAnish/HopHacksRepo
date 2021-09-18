@@ -90,7 +90,7 @@ class SignupWindow(Screen):
         # creating a DataFrame of the info
         user = pd.DataFrame([[self.username.text, self.pwd.text, self.phone.text, self.fname.text, self.lname.text]],
                             columns=['username', 'password', 'phoneNum', 'fname', 'lname'])
-        user = user.replace(r'^\s*$', np.NAN, regex=True)
+        user = user.replace(r'^\s*$', None, regex=True)
         if user.isnull().sum().sum() == 0:
             # change password to hash
             tempdict = user.to_dict('list')
@@ -136,8 +136,6 @@ Window.clearcolor = (0.95, 0.95, 0.95, 1)
 kv = Builder.load_file('registration.kv')
 sm = WindowManager()
 
-# reading all the data stored
-users = pd.read_csv('login.csv')
 
 # adding screens
 sm.add_widget(LoginWindow(name='login'))
