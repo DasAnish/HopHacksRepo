@@ -21,7 +21,9 @@ class P(FloatLayout):
 class P1(FloatLayout):
     pass
 
-#
+class P2(FloatLayout):
+    pass
+
 def popFun(message):
     show = message()
     window = Popup(title="Warning", content=show,
@@ -57,19 +59,13 @@ class LoginWindow(Screen):
             self.isTutor = False
 
     def validate(self):
-
         # validating if the username already exists
-        if self.username.text not in users['username'].unique():
-            print(self.username.text)
-            print(users['username'].unique())
-            popFun(P)
-        # elif self.username.text in users['username'].unique() and self.pwd.text != users:
-        #     raise Exception('Not Implemented')
+        tempdict = {"username": self.username.text, "password": self.pwd.text, "isTutor": self.isTutor is not None}
+        if not Backend.signInVerification(tempdict):
+            popFun(P2)
         else:
-
             # switching the current screen to display validation result
             sm.current = 'logdata'
-
             # reset TextInput widget
             self.username.text = ""
             self.pwd.text = ""
@@ -114,6 +110,15 @@ class SignupWindow(Screen):
         else:
             # if values are empty or invalid show pop up
             popFun(P)
+
+    def clearup(self):
+        sm.current = 'login'
+        self.username.text = ""
+        self.pwd.text = ""
+        self.phone.text = ""
+        self.fname.text = ""
+        self.lname.text = ""
+
 
 
 # class to display validation result
