@@ -1,4 +1,4 @@
-#from backend import Backend
+from backend import Backend, Tutor
 from kivy.app import App
 from kivy.base import Builder
 from kivy.uix.widget import Widget
@@ -310,11 +310,11 @@ class PageManager(Widget):
     PROFILE = 2
     MATCHES = 4
 
-    def __init__(self, isTutor, user=None, **kwargs):
+    def __init__(self, **kwargs):
         super(PageManager, self).__init__(**kwargs)
-        self.isTutor = isTutor
+        self.isTutor = False#isinstance(person, Tutor)
         self.size = (360, 640)
-        self.currentPage = 0 + isTutor
+        self.currentPage = 0 + self.isTutor
         self.pages = [ParentHomePage(), TutorHomePage(), ParentProfile(), TutorProfile(), ParentMatches(), TutorMatches()]
 
         with self.canvas:
@@ -322,13 +322,13 @@ class PageManager(Widget):
 
         self.add_widget(self.pages[self.currentPage])
 
-        self.homeButton = ChangePageButton(PageManager.HOME + isTutor, (10, 15), (50, 50), "images/homeButton.png")
+        self.homeButton = ChangePageButton(PageManager.HOME + self.isTutor, (10, 15), (50, 50), "images/homeButton.png")
         self.add_widget(self.homeButton)
 
-        self.matchesButton = ChangePageButton(PageManager.MATCHES + isTutor, (Window.width/2 - 25, 15), (50, 50), "images/starButton.png")
+        self.matchesButton = ChangePageButton(PageManager.MATCHES + self.isTutor, (Window.width/2 - 25, 15), (50, 50), "images/starButton.png")
         self.add_widget(self.matchesButton)
 
-        self.profileButton = ChangePageButton(PageManager.PROFILE + isTutor, (self.width - 60, 15), (50, 50), "images/profileButton.png")
+        self.profileButton = ChangePageButton(PageManager.PROFILE + self.isTutor, (self.width - 60, 15), (50, 50), "images/profileButton.png")
         self.add_widget(self.profileButton)
 
     def goToPage(self, page):
@@ -339,7 +339,7 @@ class PageManager(Widget):
 
 class MainApp(App):
     def build(self):
-        return PageManager(False)
+        return PageManager()
 
 
 if __name__ == '__main__':
