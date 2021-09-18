@@ -1,4 +1,4 @@
-from backend import Backend
+#from backend import Backend
 from kivy.app import App
 from kivy.base import Builder
 from kivy.uix.widget import Widget
@@ -12,32 +12,33 @@ from kivy.graphics import *
 from kivy.animation import *
 from kivy.graphics import RoundedRectangle
 
+
 Builder.load_file("kivyFiles/main.kv")
+photoHeight = 550
+photoWidth = 340
 
-
-#fadeInFull = Animation(opacity = 1, duration = 0.4)
-#fadeOut = Animation(opacity = 0, duration = 0.4)
 
 def AddTextWithBack(widget, str, pos):
-    print(pos)
     with widget.canvas:
         Color(0.95, 0.95, 0.95)
         back = RoundedRectangle(pos=pos, size=(0, 0))
-    text = Label(text=str, pos=(pos[0]-40, pos[1]+3), color=(0, 0, 0), halign="left")
-    text.texture_update()
-    back.size = (text.texture_size[0] + 20, text.texture_size[1] + 10)
-    text.size[1] = text.texture.size[1]
-    text.pos = (text.pos[0] + text.texture.size[0] / 2, text.pos[1] - back.size[1])
+    label = Label(text=str, pos=(pos[0]-40, pos[1]+3), color=(0, 0, 0), halign="left")
+    label.texture_update()
+    back.size = (label.texture_size[0] + 20, label.texture_size[1] + 10)
+    label.size[1] = label.texture.size[1]
+    label.pos = (label.pos[0] + label.texture.size[0] / 2, label.pos[1] - back.size[1])
     back.pos = (back.pos[0], back.pos[1] - back.size[1])
-    widget.add_widget(text)
-    return back.size[1]
+    widget.add_widget(label)
+    return back.size[1], label
+
 
 class ChangePageButton(Button):
-    def __init__(self, page, pos, size, source, **kwargs):
+    def __init__(self, page, pos, size, source, color=(1, 1, 1), **kwargs):
         super(ChangePageButton, self).__init__(**kwargs)
         self.page = page
         self.pos = pos
         self.size = size
+        self.color = color
         self.background_normal = source
         self.background_down = source.replace(".png", "") + "Down" + ".png"
         self.bind(on_press=self.pressed)
@@ -67,6 +68,73 @@ class FadeBetweenButton(Button):
         self.faded = (self.faded + 1 ) % 2
 
 
+class AcceptCardButton(Button):
+    def __init__(self, page, source, pos, size, **kwargs):
+        super(AcceptCardButton, self).__init__(**kwargs)
+        self.background_normal = source
+        self.background_down = source.replace(".png", "") + "Down" + ".png"
+        self.page = page
+        self.pos = pos
+        self.size = size
+        self.bind(on_press=self.pressed)
+    def pressed(self, instance):
+        self.page.nextCard()
+        # TODO send match request
+
+class RejectCardButton(Button):
+    def __init__(self, page, source, pos, size, **kwargs):
+        super(RejectCardButton, self).__init__(**kwargs)
+        self.background_normal = source
+        self.background_down = source.replace(".png", "") + "Down" + ".png"
+        self.page = page
+        self.pos = pos
+        self.size = size
+        self.bind(on_press=self.pressed)
+    def pressed(self, instance):
+        self.page.nextCard()
+
+
+class AcceptRequestButton(Button):
+    def __init__(self, page, request, label, source, pos, size, **kwargs):
+        super(AcceptRequestButton, self).__init__(**kwargs)
+        self.background_normal = source
+        self.background_down = source.replace(".png", "") + "Down" + ".png"
+        self.pos = pos
+        self.size = size
+        self.bind(on_press=self.pressed)
+        self.request = request
+        self.page = page
+        self.label = label
+    def pressed(self, instance):
+        self.page.remove_widget(self.request)
+        self.page.requestInfo.remove(self.label.text)
+        self.page.updateRequests()
+        # Confirm tutoring
+        # TODO accept match
+
+
+class RejectRequestButton(Button):
+    def __init__(self, page, request, label, source, pos, size, **kwargs):
+        super(RejectRequestButton, self).__init__(**kwargs)
+        self.background_normal = source
+        self.background_down = source.replace(".png", "") + "Down" + ".png"
+        self.pos = pos
+        self.size = size
+        self.bind(on_press=self.pressed)
+        self.request = request
+        self.label = label
+        self.page = page
+    def pressed(self, instance):
+        self.page.remove_widget(self.request)
+        self.page.requestInfo.remove(self.label.text)
+        self.page.updateRequests()
+        # Reject tutoring
+        # TODO reject match
+
+
+
+
+
 class SignInPage(Widget):
     def __init__(self, **kwargs):
         super(SignInPage, self).__init__(**kwargs)
@@ -75,51 +143,87 @@ class SignInPage(Widget):
 class ParentHomePage(Widget):
     def __init__(self, **kwargs):
         super(ParentHomePage, self).__init__(**kwargs)
-
-        # Image formatting
-        img = Image(source="images/kelvin1.png", allow_stretch=True, pos=(10, 80),
-                              size=(340, 550))
-        img.texture = img.texture.get_region(0, 0, img.texture_size[0], img.texture_size[0] * 550/340)
-        self.add_widget(img)
-        self.add_widget(Image(source="images/gradient.png", pos=(10, 80), size=(340, 550)))
-
-        # Info formatting
-        info = Widget(pos=(0, 0))
-        startPos = (20, 600)
-        pad = 20
-        infoToDisplay = ["Kelvin Leung", "BA Mathematics, Cambridge", "Tutors in:\n- Maths,\n- Physics,\n- Computer science",
-                         "For GCSE & A-Level students", "£30+/hr"]
-        for string in infoToDisplay:
-            print(string)
-            startPos = (startPos[0], startPos[1] - AddTextWithBack(info, string, startPos) - pad)
-        info.opacity = 0
-        self.add_widget(info)
-
-        # Tap to fade
-        fadeButton = FadeBetweenButton([img, info], img.pos, img.size)
-        self.add_widget(fadeButton)
+        self.cards = [["images/kelvin1.png", ["Kelvin Leung", "BA Mathematics, Cambridge",
+                                               "Tutors in:\n- Maths,\n- Physics,\n- Computer science",
+                                               "For GCSE & A-Level students", "£30+/hr"]],
+                      ["images/kelvin2.png", ["Coolvin Leung", "PhD Mathematics, Cambridge",
+                                              "Tutors in: \n- Nothing", "£'a lot'/hr"]]]
+        self.card = None
 
         # Yes/no buttons
-        noButton = Button(pos=(20, 100), size=(70, 70), background_normal="images/noButton.png",
-                          background_down="images/noButtonDown.png")
-        self.add_widget(noButton)
-        yesButton = Button(pos=(Window.width-90, 100), size=(70, 70), background_normal="images/yesButton.png",
-                          background_down="images/yesButtonDown.png")
-        self.add_widget(yesButton)
+        self.noButton = RejectCardButton(self, "images/noButton.png", (20, 100), (70, 70))
+        self.yesButton = RejectCardButton(self, "images/yesButton.png", (Window.width-90, 100), (70, 70))
+
+        #self.noButton = Button(pos=(20, 100), size=(70, 70), background_normal="images/noButton.png",
+        #                  background_down="images/noButtonDown.png")
+        #self.yesButton = Button(pos=(Window.width-90, 100), size=(70, 70), background_normal="images/yesButton.png",
+        #                  background_down="images/yesButtonDown.png")
+
+        self.card = self.nextCard()
+
+    def nextCard(self):
+        # TODO next tutor function
+        nextCardInfo = self.cards.pop(0)
+
+        image = nextCardInfo[0]
+        info = nextCardInfo[1]
+
+        card = Widget()
+        # Image formatting
+        img = Image(source=image, allow_stretch=True, pos=(10, 80),
+                              size=(photoWidth, photoHeight))
+        img.texture = img.texture.get_region(0, 0, img.texture_size[0], img.texture_size[0] * photoHeight/photoWidth)
+        card.add_widget(img)
+        card.add_widget(Image(source="images/gradient.png", pos=(10, 80), size=(photoWidth,photoHeight)))
+
+        # Info formatting
+        infoLabels = Widget(pos=(0, 0))
+        startPos = (20, 600)
+        pad = 20
+        for string in info:
+            height, label = AddTextWithBack(infoLabels, string, startPos)
+            startPos = (startPos[0], startPos[1] - height - pad)
+        infoLabels.opacity = 0
+        card.add_widget(infoLabels)
+
+        # Tap to fade
+        fadeButton = FadeBetweenButton([img, infoLabels], img.pos, img.size)
+        card.add_widget(fadeButton)
+
+        self.remove_widget(self.card)
+        self.add_widget(card)
+
+        self.remove_widget(self.noButton)
+        self.add_widget(self.noButton)
+        self.remove_widget(self.yesButton)
+        self.add_widget(self.yesButton)
+        return card
 
 
 
 class TutorHomePage(Widget):
     def __init__(self, **kwargs):
         super(TutorHomePage, self).__init__(**kwargs)
-        requests = []
-        infoToDisplay = ["Villar\nKS3 Mathematics, £5/hr", "Kiln\nKS2 English, £600/hr"]
+        self.add_widget(Label(text="Requests", color=(0, 0, 0), pos=(60, 550), font_size="40sp"))
+        self.requests = []
+        # TODO: get requested matched
+        self.requestInfo = ["Villar\nKS3 Mathematics, £5/hr", "Kiln\nKS2 English, £600/hr", "Das\nGCSE Spanish, £60/hr",
+                            "Samuels\nA-Level Chemistry, £30/hr"]
+        self.updateRequests()
+    def updateRequests(self):
+        for request in self.requests:
+            self.remove_widget(request)
         pad = 10
-        startPos = (20, 600)
-        for i in range(0, len(infoToDisplay)):
-            requests.append(Widget(pos=(0, 0)))
-            startPos = (startPos[0], startPos[1] - AddTextWithBack(requests[i], infoToDisplay[i], startPos) - pad)
-            self.add_widget(requests[i])
+        startPos = (20, 550)
+        for i in range(0, len(self.requestInfo)):
+            self.requests.append(Widget(pos=(0, 0)))
+            height, label = AddTextWithBack(self.requests[i], self.requestInfo[i], startPos)
+            self.requests[i].add_widget(AcceptRequestButton(self, self.requests[i], label, "images/smallYesButton.png",
+                                                            (Window.width - 115, startPos[1] - 50), (50, 50)))
+            self.requests[i].add_widget(RejectRequestButton(self, self.requests[i], label, "images/smallNoButton.png",
+                                                            (Window.width - 60, startPos[1] - 50), (50, 50)))
+            startPos = (startPos[0], startPos[1] - height - pad)
+            self.add_widget(self.requests[i])
 
 
 class ParentProfile(Widget):
