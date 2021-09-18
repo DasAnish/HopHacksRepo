@@ -21,7 +21,7 @@ class Mongo:
         uri = "mongodb+srv://cluster0.d7bvv.mongodb.net/myFirstDatabase?authSource=%24external&authMechanism=MONGODB-X509&retryWrites=true&w=majority"
         self.client = pymongo.MongoClient(uri,
                         tls=True,
-                        tlsCertificateKeyFile='../X509-cert-6197396631610520216.pem')
+                        tlsCertificateKeyFile='X509-cert-6197396631610520216.pem')
 
         self.parentsData = self.client['HopHacks']['Parents']
         self.tutorsData = self.client['HopHacks']['Tutors']

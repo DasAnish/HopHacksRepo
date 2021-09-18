@@ -1,6 +1,7 @@
 from .dataObjects import Tutor
 from .connect_with_mongo import Mongo
 
+
 class TutorProfileBackend:
 
     __instance = None
@@ -20,6 +21,12 @@ class TutorProfileBackend:
             TutorProfileBackend.__instance = self
 
     def updateInfo(self, tutorObj: Tutor, info):
-        tutorObj.updateInfo(info)
-
         mongo = Mongo.getInstance()
+        query = {'_id': tutorObj.id}
+        tutorsData = mongo.tutorsData.find_one(query)[0]
+        tutorObj.updateInfo(info)
+        temp = tutorObj.toDict()
+        del temp['_id']
+
+        tutorsData.update_one(query, {'$set': temp})
+

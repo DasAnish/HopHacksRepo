@@ -1,3 +1,5 @@
+from .dataObjects import Parent
+from .connect_with_mongo import Mongo
 
 
 class ParentsProfileBackend:
@@ -18,5 +20,12 @@ class ParentsProfileBackend:
         else:
             ParentsProfileBackend.__instance = self
 
-    def updateInfo(self, info):
-        raise Exception("not implemented")
+    def updateInfo(self, parentObj: Parent, info):
+        mongo = Mongo.getInstance()
+        query = {'_id': parentObj.id}
+        parentsData = mongo.parentsData.find_one(query)[0]
+        parentObj.updateInfo(info)
+        temp = parentObj.toDict()
+        del temp['_id']
+
+        parentsData.update_one(query, {'$set': temp})
