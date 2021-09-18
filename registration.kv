@@ -1,0 +1,150 @@
+<Label>
+    font_size : 18
+    color : (0,0,0,1)
+
+
+# there are three screens
+windowManager:
+    loginWindow:
+    signupWindow:
+    logDataWindow:
+
+# GUI for the login window
+<loginWindow>:
+    username : username
+    pwd : pwd
+    FloatLayout:
+        size: root.width, root.height
+        Label:
+            text : "USERNAME: "
+            size_hint : 0.2, 0.1
+            pos_hint : {"x":0.25, "top":0.9}
+        TextInput:
+            id : username
+            multiline :False
+            size_hint : 0.3, 0.1
+            pos_hint : {"x" : 0.45, "top" : 0.9}
+        Label:
+            text : "PASSWORD: "
+            size_hint : 0.2, 0.1
+            pos_hint : {"x" : 0.25, "top" : 0.7}
+        TextInput:
+            id : pwd
+            multiline :False
+            size_hint : 0.3, 0.1
+            pos_hint : {"x" : 0.45, "top" : 0.7}
+        Button:
+            text : "Create an account"
+            size_hint : 0.4, 0.1
+            pos_hint : {"x" : 0.33, "top" : 0.4}
+            on_release:
+                app.root.current = 'signup'
+                root.manager.transition.direction = "left"
+        Button:
+            text : "LOGIN"
+            size_hint : 0.3, 0.1
+            pos_hint : {"x" : 0.39, "top" : 0.2}
+            on_release:
+                root.validate()
+                root.manager.transition.direction = "up"
+
+# GUI for the signup window
+<signupWindow>:
+    username: username
+    pwd : pwd
+    phone : phone
+    fname : fname
+    lname : lname
+    FloatLayout:
+        Label:
+            text : "USERNAME: "
+            size_hint : 0.1, 0.06
+            pos_hint : {"x":0.27, "top":0.9}
+        TextInput:
+            id : username
+            multiline : False
+            size_hint : 0.3, 0.06
+            pos_hint : {"x" : 0.45, "top" : 0.9}
+
+        Label:
+            text : "PASSWORD: "
+            size_hint : 0.1, 0.06
+            pos_hint : {"x" : 0.27, "top" : 0.75}
+        TextInput:
+            id : pwd
+            multiline : False
+            size_hint : 0.3, 0.06
+            pos_hint : {"x" : 0.45, "top" : 0.75}
+
+        Label:
+            text : "PHONE: "
+            size_hint : 0.1, 0.06
+            pos_hint : {"x" : 0.27, "top" : 0.6}
+        TextInput:
+            id : phone
+            multiline : False
+            size_hint : 0.3, 0.06
+            pos_hint : {"x" : 0.45, "top" : 0.6}
+
+        Label:
+            text : "FIRST NAME: "
+            size_hint : 0.1, 0.06
+            pos_hint : {"x" : 0.27, "top" : 0.45}
+        TextInput:
+            id : fname
+            multiline : False
+            size_hint : 0.3, 0.06
+            pos_hint : {"x" : 0.45, "top" : 0.45}
+
+        Label:
+            text : "LAST NAME: "
+            size_hint : 0.1, 0.06
+            pos_hint : {"x" : 0.27, "top" : 0.3}
+        TextInput:
+            id : lname
+            multiline : False
+            size_hint : 0.3, 0.06
+            pos_hint : {"x" : 0.45, "top" : 0.3}
+
+        Button:
+            text : "SUBMIT"
+            size_hint : 0.2, 0.1
+            pos_hint : {"x" : 0.4, "top" : 0.17}
+            on_press :
+                root.signup()
+                root.manager.transition.direction = "right"
+
+# GUI to show validation result
+<logDataWindow>:
+    info : info
+    FloatLayout:
+        Label:
+            id : info
+            size_hint : 0.8, 0.2
+            pos_hint : {"x" : 0.15, "top" : 0.8}
+            text : "SUCCESSFULLY LOGGED IN"
+        Button:
+            text : "Login"
+            size_hint : 0.4, 0.1
+            pos_hint : {"x" : 0.33, "top" : 0.55}
+            on_release:
+                app.root.current = 'login'
+                root.manager.transition.direction = "down"
+        Button:
+            text : "Create new account"
+            size_hint : 0.4, 0.1
+            pos_hint : {"x" : 0.33, "top" : 0.4}
+            on_release:
+                app.root.current = 'signup'
+                root.manager.transition.direction = "down"
+
+
+# GUI for pop up window
+<P>:
+    Label:
+        text : "Please enter valid information"
+        size_hint : 0.2, 0.1
+        pos_hint : {"x" : 0.4, "top" : 0.7}
+        color : (1,1,1,1)
+        halign : 'center'
+
