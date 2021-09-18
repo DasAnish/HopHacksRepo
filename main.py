@@ -12,10 +12,32 @@ from kivy.graphics import *
 from kivy.animation import *
 from kivy.graphics import RoundedRectangle
 
+from backend import Backend, Match, Level
 
 Builder.load_file("kivyFiles/main.kv")
 photoHeight = 550
 photoWidth = 340
+
+
+class PersonSingleTon:
+
+    __instance = None
+
+    @staticmethod
+    def getInstance():
+        if PersonSingleTon.__instance is None:
+            PersonSingleTon()
+
+        return PersonSingleTon.__instance
+
+    def __init__(self):
+        if PersonSingleTon.__instance is not None:
+            raise Exception("Singleton: PersonSingleton")
+
+        PersonSingleTon.__instance = self
+
+        self.person = None
+        self.isTutor = False
 
 
 def AddTextWithBack(widget, str, pos):
@@ -77,9 +99,17 @@ class AcceptCardButton(Button):
         self.pos = pos
         self.size = size
         self.bind(on_press=self.pressed)
+        self.tutorObj = None
     def pressed(self, instance):
         self.page.nextCard()
-        # TODO send match request
+        # send match request
+
+        parentObj = PersonSingleTon.getInstance()
+
+        match = Match(parentObj, self.tutorObj)
+
+        Backend.sendLike(match)
+
 
 class RejectCardButton(Button):
     def __init__(self, page, source, pos, size, **kwargs):
@@ -90,12 +120,13 @@ class RejectCardButton(Button):
         self.pos = pos
         self.size = size
         self.bind(on_press=self.pressed)
+        self.tutorObj = None
     def pressed(self, instance):
         self.page.nextCard()
 
 
 class AcceptRequestButton(Button):
-    def __init__(self, page, request, label, source, pos, size, **kwargs):
+    def __init__(self, page, request, label, source, pos, size, match, **kwargs):
         super(AcceptRequestButton, self).__init__(**kwargs)
         self.background_normal = source
         self.background_down = source.replace(".png", "") + "Down" + ".png"
@@ -105,16 +136,18 @@ class AcceptRequestButton(Button):
         self.request = request
         self.page = page
         self.label = label
+        self.match = match
     def pressed(self, instance):
         self.page.remove_widget(self.request)
         self.page.requestInfo.remove(self.label.text)
         self.page.updateRequests()
         # Confirm tutoring
-        # TODO accept match
+        Backend.accept(self.match)
+        # accept match
 
 
 class RejectRequestButton(Button):
-    def __init__(self, page, request, label, source, pos, size, **kwargs):
+    def __init__(self, page, request, label, source, pos, size, match, **kwargs):
         super(RejectRequestButton, self).__init__(**kwargs)
         self.background_normal = source
         self.background_down = source.replace(".png", "") + "Down" + ".png"
@@ -124,12 +157,14 @@ class RejectRequestButton(Button):
         self.request = request
         self.label = label
         self.page = page
+        self.match = match
     def pressed(self, instance):
         self.page.remove_widget(self.request)
         self.page.requestInfo.remove(self.label.text)
         self.page.updateRequests()
         # Reject tutoring
-        # TODO reject match
+        # reject match
+        Backend.reject(self.match)
 
 
 
@@ -152,7 +187,7 @@ class ParentHomePage(Widget):
 
         # Yes/no buttons
         self.noButton = RejectCardButton(self, "images/noButton.png", (20, 100), (70, 70))
-        self.yesButton = RejectCardButton(self, "images/yesButton.png", (Window.width-90, 100), (70, 70))
+        self.yesButton = AcceptCardButton(self, "images/yesButton.png", (Window.width-90, 100), (70, 70))
 
         #self.noButton = Button(pos=(20, 100), size=(70, 70), background_normal="images/noButton.png",
         #                  background_down="images/noButtonDown.png")
@@ -160,13 +195,26 @@ class ParentHomePage(Widget):
         #                  background_down="images/yesButtonDown.png")
 
         self.card = self.nextCard()
+        self.nextTutor = Backend.nextTutor()
 
     def nextCard(self):
-        # TODO next tutor function
+        # next tutor function
+        nextItem = next(self.nextTutor, next)
+        self.yesButton.tutorObj = nextItem
+        self.noButton.tutorObj = nextItem
+
+        if not nextItem:
+            #: Handle end of cards
+            pass
+
+        info = [f"{nextItem.fname} {nextItem.lname}",
+                nextItem.qualification,
+                f"Tutors in:\n" +'\n'.join(nextItem.subject),
+                f"£{nextItem.rateMin}+/hr"]
+
         nextCardInfo = self.cards.pop(0)
 
         image = nextCardInfo[0]
-        info = nextCardInfo[1]
 
         card = Widget()
         # Image formatting
@@ -200,16 +248,43 @@ class ParentHomePage(Widget):
         return card
 
 
-
 class TutorHomePage(Widget):
     def __init__(self, **kwargs):
         super(TutorHomePage, self).__init__(**kwargs)
         self.add_widget(Label(text="Requests", color=(0, 0, 0), pos=(60, 550), font_size="40sp"))
         self.requests = []
-        # TODO: get requested matched
-        self.requestInfo = ["Villar\nKS3 Mathematics, £5/hr", "Kiln\nKS2 English, £600/hr", "Das\nGCSE Spanish, £60/hr",
-                            "Samuels\nA-Level Chemistry, £30/hr"]
+        #: get requested matched
+        self.requestInfo = []
+        self.listOfMatches = []
+            #["Villar\nKS3 Mathematics, 5/hr", "Kiln\nKS2 English, £600/hr", "Das\nGCSE Spanish, £60/hr",
+            #               "Samuels\nA-Level Chemistry, £30/hr"]
         self.updateRequests()
+
+    def updateRequestsInfo(self):
+
+        personObj = PersonSingleTon.getInstance()
+        self.listOfMatches = Backend.getMatches(personObj.person, Match.REQUESTED)
+
+        def convertMatchToString(match):
+            output = ''
+            parent = match.parent
+            output += parent.lname + "\n"
+
+            if parent.level == Level.ALEVEL:
+                output += 'A-Level, '
+            elif parent.level == Level.GCSE:
+                output += 'GCSE, '
+            elif parent.level == Level.KS3:
+                output += 'KS3, '
+            elif parent.level == Level.KS2:
+                output += 'KS2, '
+
+            output += f"£{parent.rateMax}/hr"
+
+            return output
+
+        self.requestInfo = [convertMatchToString(i) for i in self.listOfMatches]
+
     def updateRequests(self):
         for request in self.requests:
             self.remove_widget(request)
@@ -219,9 +294,11 @@ class TutorHomePage(Widget):
             self.requests.append(Widget(pos=(0, 0)))
             height, label = AddTextWithBack(self.requests[i], self.requestInfo[i], startPos)
             self.requests[i].add_widget(AcceptRequestButton(self, self.requests[i], label, "images/smallYesButton.png",
-                                                            (Window.width - 115, startPos[1] - 50), (50, 50)))
+                                                            (Window.width - 115, startPos[1] - 50), (50, 50),
+                                                            self.listOfMatches[i]))
             self.requests[i].add_widget(RejectRequestButton(self, self.requests[i], label, "images/smallNoButton.png",
-                                                            (Window.width - 60, startPos[1] - 50), (50, 50)))
+                                                            (Window.width - 60, startPos[1] - 50), (50, 50),
+                                                            self.listOfMatches[i]))
             startPos = (startPos[0], startPos[1] - height - pad)
             self.add_widget(self.requests[i])
 
