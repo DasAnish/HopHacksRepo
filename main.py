@@ -132,6 +132,10 @@ class RejectRequestButton(Button):
         # TODO reject match
 
 
+class Card(Widget):
+    def __init__(self, image, **kwargs):
+        super(Card, self).__init__(**kwargs)
+        self.image = image
 
 
 
@@ -146,7 +150,7 @@ class ParentHomePage(Widget):
         self.cards = [["images/kelvin1.png", ["Kelvin Leung", "BA Mathematics, Cambridge",
                                                "Tutors in:\n- Maths,\n- Physics,\n- Computer science",
                                                "For GCSE & A-Level students", "£30+/hr"]],
-                      ["images/kelvin2.png", ["Coolvin Leung", "PhD Mathematics, Cambridge",
+                      ["images/businessMan.png", ["Coolvin Leung", "PhD Mathematics, Cambridge",
                                               "Tutors in: \n- Nothing", "£'a lot'/hr"]]]
         self.card = None
 
@@ -168,13 +172,21 @@ class ParentHomePage(Widget):
         image = nextCardInfo[0]
         info = nextCardInfo[1]
 
-        card = Widget()
         # Image formatting
         img = Image(source=image, allow_stretch=True, pos=(10, 80),
                               size=(photoWidth, photoHeight))
-        img.texture = img.texture.get_region(0, 0, img.texture_size[0], img.texture_size[0] * photoHeight/photoWidth)
+        if img.texture_size[1]/img.texture_size[0] >  photoHeight/photoWidth:
+            img.texture = img.texture.get_region(0, (img.texture_size[1] - img.texture_size[0] * photoHeight/photoWidth)/2, img.texture_size[0], img.texture_size[0] * photoHeight/photoWidth)
+        else:
+            img.texture = img.texture.get_region((img.texture_size[0] - img.texture_size[1] * photoWidth/photoHeight) / 2, 0, img.texture_size[1] * photoWidth/photoHeight, img.texture_size[1])
+        card = Card(img)
+        if (self.card != None):
+            card.pos = (Window.width - photoWidth, self.card.pos[1])
+        else:
+            card.pos = (0, 0)
         card.add_widget(img)
-        card.add_widget(Image(source="images/gradient.png", pos=(10, 80), size=(photoWidth,photoHeight)))
+        card.add_widget(Image(source="images/gradient.png", pos=(10, 80), size=(photoWidth, photoHeight)))
+        card.add_widget(Image(source="images/border.png", pos=(10, 80), size=(photoWidth, photoHeight)))
 
         # Info formatting
         infoLabels = Widget(pos=(0, 0))
@@ -190,8 +202,15 @@ class ParentHomePage(Widget):
         fadeButton = FadeBetweenButton([img, infoLabels], img.pos, img.size)
         card.add_widget(fadeButton)
 
-        self.remove_widget(self.card)
         self.add_widget(card)
+        self.remove_widget(self.card)
+
+        #if (self.card != None):
+            #print("hello")
+            #Animation(pos=(self.card.pos[0], self.card.pos[1]), duration=0.4).start(card)
+            #Animation(size=(0, 0), duration=0.4).start(self.card)
+
+        #self.remove_widget(self.card)
 
         self.remove_widget(self.noButton)
         self.add_widget(self.noButton)
@@ -225,41 +244,91 @@ class TutorHomePage(Widget):
             startPos = (startPos[0], startPos[1] - height - pad)
             self.add_widget(self.requests[i])
 
-
+# KELVIN GO HERE
 class ParentProfile(Widget):
     def __init__(self, **kwargs):
         super(ParentProfile, self).__init__(**kwargs)
-        img = Image(source="images/kelvin2.png", allow_stretch=True, pos=(10, 80),
-                              size=(Window.width - 20, Window.height - 90))
-        img.texture = img.texture.get_region(0, 0, img.texture_size[0], img.texture_size[0] * 550 / 340)
-        self.add_widget(img)
-
 
 class TutorProfile(Widget):
     def __init__(self, **kwargs):
         super(TutorProfile, self).__init__(**kwargs)
 
+class ParentMatches(Widget):
+    def __init__(self, **kwargs):
+        super(ParentMatches, self).__init__(**kwargs)
+        self.add_widget(Label(text="Tutors", color=(0, 0, 0), pos=(40, 550), font_size="40sp"))
+        self.matches = []
+        # TODO: get matched parents
+        self.matchInfo = [
+            "Kelvin Leung\nBA Mathematics, Cambridge\nTutors in:\n- Maths,\n- Physics,\n- Computer science"
+            "\n£30+/hr\n\nContact at:\n077777888999, leung@gmail.com"]
+        self.updateMatches()
+
+    def updateMatches(self):
+        for match in self.matches:
+            self.remove_widget(self.matches)
+        pad = 10
+        startPos = (20, 550)
+        for i in range(0, len(self.matchInfo)):
+            self.matches.append(Widget(pos=(0, 0)))
+            height, label = AddTextWithBack(self.matches[i], self.matchInfo[i], startPos)
+            # self.matches[i].add_widget(AcceptRequestButton(self, self.matches[i], label, "images/smallYesButton.png",
+            #                                                (Window.width - 115, startPos[1] - 50), (50, 50)))
+            # self.matches[i].add_widget(RejectRequestButton(self, self.matches[i], label, "images/smallNoButton.png",
+            #                                                (Window.width - 60, startPos[1] - 50), (50, 50)))
+            startPos = (startPos[0], startPos[1] - height - pad)
+            self.add_widget(self.matches[i])
+
+class TutorMatches(Widget):
+    def __init__(self, **kwargs):
+        super(TutorMatches, self).__init__(**kwargs)
+        self.add_widget(Label(text="Tutees", color=(0, 0, 0), pos=(40, 550), font_size="40sp"))
+        self.matches = []
+        # TODO: get matched parents
+        self.matchInfo = ["Villar\nKS3 Mathematics, £5/hr\n\nContact at:\n077777888999, villar@gmail.com", "Kiln\nKS2 English, £600/hr\n\nContact at:\n077777888999, kiln@gmail.com",
+                          "Das\nGCSE Spanish, £60/hr\n\nContact at:\n077777888999, das@gmail.com", "Samuels\nA-Level Chemistry, £30/hr\n\nContact at:\n077777888999, samuels@gmail.com"]
+        self.updateMatches()
+
+    def updateMatches(self):
+        for match in self.matches:
+            self.remove_widget(self.matches)
+        pad = 10
+        startPos = (20, 550)
+        for i in range(0, len(self.matchInfo)):
+            self.matches.append(Widget(pos=(0, 0)))
+            height, label = AddTextWithBack(self.matches[i], self.matchInfo[i], startPos)
+            #self.matches[i].add_widget(AcceptRequestButton(self, self.matches[i], label, "images/smallYesButton.png",
+            #                                                (Window.width - 115, startPos[1] - 50), (50, 50)))
+            #self.matches[i].add_widget(RejectRequestButton(self, self.matches[i], label, "images/smallNoButton.png",
+            #                                                (Window.width - 60, startPos[1] - 50), (50, 50)))
+            startPos = (startPos[0], startPos[1] - height - pad)
+            self.add_widget(self.matches[i])
+
 
 class PageManager(Widget):
-    SIGNIN = 0
-    HOME = 1
-    PROFILE = 3
+    HOME = 0
+    PROFILE = 2
+    MATCHES = 4
 
-    def __init__(self, **kwargs):
+    def __init__(self, isTutor, user=None, **kwargs):
         super(PageManager, self).__init__(**kwargs)
+        self.isTutor = isTutor
         self.size = (360, 640)
-        self.currentPage = 2
-        self.pages = [SignInPage(), ParentHomePage(), TutorHomePage(), ParentProfile(), TutorProfile()]
+        self.currentPage = 0 + isTutor
+        self.pages = [ParentHomePage(), TutorHomePage(), ParentProfile(), TutorProfile(), ParentMatches(), TutorMatches()]
 
         with self.canvas:
             self.bgCanvas = Rectangle(pos=(0, 0), size=(self.width, self.height))#70))
 
         self.add_widget(self.pages[self.currentPage])
 
-        self.homeButton = ChangePageButton(PageManager.HOME, (10, 15), (50, 50), "images/homeButton.png")
+        self.homeButton = ChangePageButton(PageManager.HOME + isTutor, (10, 15), (50, 50), "images/homeButton.png")
         self.add_widget(self.homeButton)
 
-        self.profileButton = ChangePageButton(PageManager.PROFILE, (self.width - 60, 15), (50, 50), "images/profileButton.png")
+        self.matchesButton = ChangePageButton(PageManager.MATCHES + isTutor, (Window.width/2 - 25, 15), (50, 50), "images/starButton.png")
+        self.add_widget(self.matchesButton)
+
+        self.profileButton = ChangePageButton(PageManager.PROFILE + isTutor, (self.width - 60, 15), (50, 50), "images/profileButton.png")
         self.add_widget(self.profileButton)
 
     def goToPage(self, page):
@@ -270,11 +339,10 @@ class PageManager(Widget):
 
 class MainApp(App):
     def build(self):
-        return PageManager()
+        return PageManager(False)
 
 
 if __name__ == '__main__':
-
     Window.size = (360, 640)
     Config.set('graphics', 'resizable', False)
     MainApp().run()
