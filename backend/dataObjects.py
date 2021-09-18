@@ -127,8 +127,8 @@ class Match:
     def __init__(self, id, parent, tutor):
         self.id = id
 
-        self.parent = parent
-        self.tutor = tutor
+        self.parent_id = parent
+        self.tutor_id = tutor
 
         self.status = Match.REQUESTED
 

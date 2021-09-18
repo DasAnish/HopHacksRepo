@@ -1,3 +1,5 @@
+from .connect_with_mongo import Mongo
+from .dataObjects import Match
 
 
 class ParentsHomeBackend:
@@ -18,8 +20,21 @@ class ParentsHomeBackend:
         else:
             ParentsHomeBackend.__instance = self
 
-    def sendLike(self, matches):
-        raise Exception("not implemented")
+        self.cursor = None
 
-    def sendDislike(self, matches):
-        raise Exception("not implemented")
+    def sendLike(self, match: Match):
+        pass
+
+    def sendDislike(self, match: Match):
+        pass
+
+    def nextTutor(self):
+
+        if self.cursor is None:
+            mongo = Mongo.getInstance()
+            self.cursor = mongo.tutorsData.find({})
+
+        if self.cursor.alive():
+            return self.cursor.next()
+        else:
+            return False

@@ -58,13 +58,14 @@ class SignInBackend:
 
         query = {"username": username}
         if isTutor:
+            if not mongo.tutorsData.count_documents(query):
+                return False
             output = mongo.tutorsData.find(query)
 
         else:
+            if not mongo.parentsData.count_documents(query):
+                return False
             output = mongo.parentsData.find(query)
-
-        if not output.count_documents():
-            return False
 
         output = output[0]
 
