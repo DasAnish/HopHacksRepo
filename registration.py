@@ -65,7 +65,8 @@ class LoginWindow(Screen):
         tempdict = {"username": self.username.text, "password": self.pwd.text, "isTutor": self.isTutor is not None}
         tempdict['password'] = passwordHash(tempdict['password']).hex()
         print(tempdict['password'])
-        if Backend.signInVerification(tempdict) == 0:
+        result = Backend.signInVerification(tempdict)
+        if result == None:
             popFun(P2)
         else:
             # switching the current screen to display validation result
@@ -73,6 +74,7 @@ class LoginWindow(Screen):
             # reset TextInput widget
             self.username.text = ""
             self.pwd.text = ""
+            LogDataWindow.instance.PM.updateUser(result)
 
 # class to accept sign up info
 class SignupWindow(Screen):
@@ -127,9 +129,13 @@ class SignupWindow(Screen):
 
 # class to display validation result
 class LogDataWindow(Screen):
+    instance = None
+
     def __init__(self, **kwargs):
         super(LogDataWindow, self).__init__(**kwargs)
-        self.add_widget(PageManager())
+        self.PM = PageManager()
+        self.add_widget(self.PM)
+        self.instance = self
 
 
 # class for managing screens

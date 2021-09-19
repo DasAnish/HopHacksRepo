@@ -1,4 +1,4 @@
-from backend import Backend, Tutor
+from backend import Backend, Tutor, Parent
 from kivy.app import App
 from kivy.base import Builder
 from kivy.uix.widget import Widget
@@ -184,11 +184,11 @@ class SignInPage(Widget):
 class ParentHomePage(Widget):
     def __init__(self, **kwargs):
         super(ParentHomePage, self).__init__(**kwargs)
-        self.cards = [["images/kelvin1.png", ["Kelvin Leung", "BA Mathematics, Cambridge",
-                                               "Tutors in:\n- Maths,\n- Physics,\n- Computer science",
-                                               "For GCSE & A-Level students", "£30+/hr"]],
-                      ["images/businessMan.png", ["Coolvin Leung", "PhD Mathematics, Cambridge",
-                                              "Tutors in: \n- Nothing", "£'a lot'/hr"]]]
+        #self.cards = [["images/kelvin1.png", ["Kelvin Leung", "BA Mathematics, Cambridge",
+        #                                       "Tutors in:\n- Maths,\n- Physics,\n- Computer science",
+        #                                       "For GCSE & A-Level students", "£30+/hr"]],
+        #              ["images/businessMan.png", ["Coolvin Leung", "PhD Mathematics, Cambridge",
+        #                                      "Tutors in: \n- Nothing", "£'a lot'/hr"]]]
         self.card = None
 
         # Yes/no buttons
@@ -200,8 +200,8 @@ class ParentHomePage(Widget):
         #self.yesButton = Button(pos=(Window.width-90, 100), size=(70, 70), background_normal="images/yesButton.png",
         #                  background_down="images/yesButtonDown.png")
 
-        self.card = self.nextCard()
         self.nextTutor = Backend.nextTutor()
+        self.card = self.nextCard()
 
     def nextCard(self):
         # next tutor function
@@ -210,17 +210,17 @@ class ParentHomePage(Widget):
         self.noButton.tutorObj = nextItem
 
         if not nextItem:
-            # TODO: Handle end of cards
-            pass
-
-        info = [f"{nextItem.fname} {nextItem.lname}",
-                nextItem.qualification,
-                f"Tutors in:\n" +'\n'.join(nextItem.subject),
-                f"£{nextItem.rateMin}+/hr"]
-
-        nextCardInfo = self.cards.pop(0)
-
-        image = nextCardInfo[0]
+            #: Handle end of cards
+            info = []
+            image = "images/businessMan.png"
+            print("no cards left")
+            #pass
+        else:
+            info = [f"{nextItem.fname} {nextItem.lname}",
+                    nextItem.qualification,
+                    f"Tutors in:\n" +'\n'.join(nextItem.subject),
+                    f"£{nextItem.rateMin}+/hr"]
+            image = "images/kelvin1.png"
 
         # Image formatting
         img = Image(source=image, allow_stretch=True, pos=(10, 80),
@@ -391,6 +391,7 @@ class PageManager(Widget):
 
     def __init__(self, **kwargs):
         super(PageManager, self).__init__(**kwargs)
+        Window.size = (360, 640)
         self.isTutor = False#isinstance(person, Tutor)
         self.size = (360, 640)
         self.currentPage = 0 + self.isTutor
