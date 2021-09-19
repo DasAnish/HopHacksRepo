@@ -1,4 +1,4 @@
-from backend import Backend, Tutor, Parent
+from backend import Backend, Tutor
 from kivy.app import App
 from kivy.base import Builder
 from kivy.uix.widget import Widget
@@ -200,17 +200,17 @@ class ParentHomePage(Widget):
         #self.yesButton = Button(pos=(Window.width-90, 100), size=(70, 70), background_normal="images/yesButton.png",
         #                  background_down="images/yesButtonDown.png")
 
-        self.nextTutor = Backend.nextTutor()
         self.card = self.nextCard()
+        self.nextTutor = Backend.nextTutor()
 
     def nextCard(self):
         # next tutor function
-        nextItem = next(self.nextTutor, next)
+        nextItem = next(self.nextTutor, None)
         self.yesButton.tutorObj = nextItem
         self.noButton.tutorObj = nextItem
 
         if not nextItem:
-            #: Handle end of cards
+            # TODO: Handle end of cards
             pass
 
         info = [f"{nextItem.fname} {nextItem.lname}",
@@ -391,7 +391,6 @@ class PageManager(Widget):
 
     def __init__(self, **kwargs):
         super(PageManager, self).__init__(**kwargs)
-        Window.size = (360, 640)
         self.isTutor = False#isinstance(person, Tutor)
         self.size = (360, 640)
         self.currentPage = 0 + self.isTutor
