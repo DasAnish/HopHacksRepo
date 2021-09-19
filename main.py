@@ -22,6 +22,14 @@ parent = {'username':'kelvincfleung', 'password':'hello123', 'fname':'Kelvin', '
 parentObj = Parent('61467ec2c2c5a2e917994d69')
 parentObj.updateInfo(parent)
 
+
+def getOrDefault(dictionary, key, default):
+    if key in dictionary:
+        return dictionary[key]
+    else:
+        return default
+
+
 class PersonSingleTon:
 
     __instance = None
@@ -43,11 +51,14 @@ class PersonSingleTon:
         self.isTutor = False
 
 
-def AddTextWithBack(widget, str, pos):
+def AddTextWithBack(widget, string, pos):
+    if string is None or string.strip(" ") == "":
+        return 0, None
+    string = str(string)
     with widget.canvas:
         Color(0.95, 0.95, 0.95)
         back = RoundedRectangle(pos=pos, size=(0, 0))
-    label = Label(text=str, pos=(pos[0]-40, pos[1]+3), color=(0, 0, 0), halign="left")
+    label = Label(text=string, pos=(pos[0]-40, pos[1]+3), color=(0, 0, 0), halign="left")
     label.texture_update()
     back.size = (label.texture_size[0] + 20, label.texture_size[1] + 10)
     label.size[1] = label.texture.size[1]
@@ -209,11 +220,14 @@ class ParentHomePage(Widget):
         self.yesButton.tutorObj = nextItem
         self.noButton.tutorObj = nextItem
 
+        showYesNo = True
+
         if not nextItem:
             #: Handle end of cards
             info = []
             image = "images/businessMan.png"
             print("no cards left")
+            showYesNo = False
             #pass
         else:
             info = [f"{nextItem.fname} {nextItem.lname}",
@@ -244,7 +258,8 @@ class ParentHomePage(Widget):
         pad = 20
         for string in info:
             height, label = AddTextWithBack(infoLabels, string, startPos)
-            startPos = (startPos[0], startPos[1] - height - pad)
+            if (label is not None):
+                startPos = (startPos[0], startPos[1] - height - pad)
         infoLabels.opacity = 0
         card.add_widget(infoLabels)
 
@@ -364,8 +379,9 @@ class TutorMatches(Widget):
         self.add_widget(Label(text="Tutees", color=(0, 0, 0), pos=(40, 550), font_size="40sp"))
         self.matches = []
         # TODO: get matched parents
-        self.matchInfo = ["Villar\nKS3 Mathematics, £5/hr\n\nContact at:\n077777888999, villar@gmail.com", "Kiln\nKS2 English, £600/hr\n\nContact at:\n077777888999, kiln@gmail.com",
-                          "Das\nGCSE Spanish, £60/hr\n\nContact at:\n077777888999, das@gmail.com", "Samuels\nA-Level Chemistry, £30/hr\n\nContact at:\n077777888999, samuels@gmail.com"]
+        self.matchInfo = ["Villar\nKS3 Mathematics, £5/hr\n\nContact at:\n077777888999, villar@gmail.com",
+                          "Kiln\nKS2 English, £600/hr\n\nContact at:\n077777888999, kiln@gmail.com",
+                          "Das\nGCSE Spanish, £60/hr\n\nContact at:\n077777888999, das@gmail.com"]
         self.updateMatches()
 
     def updateMatches(self):
@@ -413,8 +429,14 @@ class PageManager(Widget):
 
     def goToPage(self, page):
         self.remove_widget(self.pages[self.currentPage])
-        self.currentPage = page
+        self.currentPage = page + self.isTutor
         self.add_widget(self.pages[self.currentPage])
+
+    def updateUser(self, person):
+        PersonSingleTon.getInstance().person = person
+        self.isTutor = isinstance(person, Tutor)
+        self.goToPage(0)
+        #self.currentPage += self.isTutor
 
 
 class MainApp(App):
