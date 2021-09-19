@@ -27,6 +27,12 @@ class SignInBackend:
         isTutor = loginInfo['isTutor']
 
         mongo = Mongo.getInstance()
+        query = {"username": username}
+
+        if mongo.tutorsData.count_documents(query) != 0:
+            return False
+        if mongo.parentsData.count_documents(query) != 0:
+            return False
 
         if isTutor:
             collection = mongo.tutorsData
@@ -34,12 +40,6 @@ class SignInBackend:
         else:
             collection = mongo.parentsData
             creator = Parent
-
-        # checking that the username does not exists
-        query = {"username": username}
-
-        if collection.count_documents(query) != 0:
-            return False
 
         del loginInfo['isTutor']
 
@@ -59,18 +59,16 @@ class SignInBackend:
 
         query = {"username": username}
         if isTutor:
-            if not mongo.tutorsData.count_documents(query):
+            if mongo.tutorsData.count_documents(query) == 0:
                 return
-            output = mongo.tutorsData.find(query)
+            output = mongo.tutorsData.find(query)[0]
             creator = Tutor
 
         else:
-            if not mongo.parentsData.count_documents(query):
+            if mongo.parentsData.count_documents(query) == 0:
                 return
-            output = mongo.parentsData.find(query)
+            output = mongo.parentsData.find(query)[0]
             creator = Parent
-
-        output = output[0]
 
         if output['password'] != password:
             return

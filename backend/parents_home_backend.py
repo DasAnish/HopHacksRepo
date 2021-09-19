@@ -1,5 +1,5 @@
 from .connect_with_mongo import Mongo
-from .dataObjects import Match, Tutor
+from .dataObjects import Match, Tutor, Parent
 from typing import Iterator
 
 
@@ -39,3 +39,25 @@ class ParentsHomeBackend:
             obj = Tutor(i['_id'])
             obj.updateInfo(i)
             yield obj
+
+    def getMatchesParent(self, parent: Parent, statusOfMatch):
+
+        query = {'parent_id': parent.id,
+                 'status': statusOfMatch}
+
+        listOfMatches = []
+
+        mongo = Mongo.getInstance()
+        for obj in mongo.matchesData.find(query):
+            tutor_id = obj['tutor_id']
+            tutorInfo = mongo.tutorsData.find_one({'_id':tutor_id})
+            tutorObj = Tutor(tutor_id)
+            tutorObj.updateInfo(tutorInfo)
+
+            matchObj = Match(parent, tutorObj)
+            matchObj.id = obj['_id']
+            matchObj.status = obj['status']
+
+            listOfMatches.append(matchObj)
+
+        return listOfMatches

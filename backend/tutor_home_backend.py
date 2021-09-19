@@ -20,17 +20,24 @@ class TutorHomeBackend:
         else:
             TutorHomeBackend.__instance = self
 
-    def getMatches(self, tutor: Tutor, statusOfMatch):
+    def getMatchesTutor(self, tutor: Tutor, statusOfMatch):
 
         query = {'tutor_id': tutor.id,
                  'status': statusOfMatch}
 
+        mongo = Mongo.getInstance()
+        print("tutor.id: ", tutor.id)
+        print('query', query)
+        print('query count: ', mongo.matchesData.count_documents(query))
+
         listOfMatches = []
 
-        mongo = Mongo.getInstance()
+
         for obj in mongo.matchesData.find(query):
+            print(f"parent_id: {obj['parent_id']}")
             parent_id = obj['parent_id']
-            parentInfo = mongo.parentsData.find_one({'_id':parent_id})[0]
+            print('count', mongo.parentsData.count_documents({'_id': parent_id}))
+            parentInfo = mongo.parentsData.find_one({'_id':parent_id})
             parentObj = Parent(parent_id)
             parentObj.updateInfo(parentInfo)
 
@@ -40,18 +47,18 @@ class TutorHomeBackend:
 
             listOfMatches.append(matchObj)
 
-        return matchObj
+        return listOfMatches
 
     def accept(self, match: Match):
 
         query = {'_id':match.id}
         matchesData = Mongo.getInstance().matchesData
-        matchesData.update_one({query}, {'$set': {'status': Match.ACCEPTED}})
+        matchesData.update_one(query, {'$set': {'status': Match.ACCEPTED}})
 
     def reject(self, match: Match):
 
         query = {'_id':match.id}
         matchesData = Mongo.getInstance().matchesData
-        matchesData.update_one({query}, {'$set': {'status': Match.ACCEPTED}})
+        matchesData.update_one(query, {'$set': {'status': Match.ACCEPTED}})
 
 

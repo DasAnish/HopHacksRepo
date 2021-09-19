@@ -100,7 +100,7 @@ class Tutor(Person):
         self.id = id
 
         self.picture = None
-        self.qualification = []
+        self.qualification = ""
 
     def updateInfo(self, info: Dict):
         self.baseUpdateInfo(info)
@@ -125,7 +125,7 @@ class Match:
 
     REQUESTED, ACCEPTED, REJECTED = 0, 1, 2
 
-    def __init__(self, parent: Parent, tutor: Parent):
+    def __init__(self, parent: Parent, tutor: Tutor):
         self.id = 0
 
         self.parent = parent

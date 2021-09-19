@@ -1,4 +1,5 @@
 import numpy as np
+from backend import Tutor
 from kivy.app import App
 from kivy.uix.widget import Widget
 from kivy.uix.screenmanager import ScreenManager, Screen
@@ -14,7 +15,7 @@ from backend import Backend
 from main import PageManager
 from kivy.config import Config
 
-
+logDataWindow = None
 
 # class to build GUI for a popup window
 class P(FloatLayout):
@@ -55,16 +56,15 @@ class LoginWindow(Screen):
     isTutor = ObjectProperty(None)
 
     def checkbox_click(self, instance, value):
-        if value == True:
-            self.isTutor = True
-        else:
-            self.isTutor = False
+        print(value)
+        self.isTutor = value
 
     def validate(self):
         # validating if the username already exists
-        tempdict = {"username": self.username.text, "password": self.pwd.text, "isTutor": self.isTutor is not None}
+        tempdict = {"username": self.username.text, "password": self.pwd.text, "isTutor": self.isTutor is not None and self.isTutor}
         tempdict['password'] = passwordHash(tempdict['password']).hex()
         print(tempdict['password'])
+        print(tempdict)
         result = Backend.signInVerification(tempdict)
         if result == None:
             popFun(P2)
@@ -74,7 +74,9 @@ class LoginWindow(Screen):
             # reset TextInput widget
             self.username.text = ""
             self.pwd.text = ""
-            LogDataWindow.instance.PM.updateUser(result)
+            logDataWindow.PM.updateUser(result)
+            print(isinstance(result, Tutor))
+            print(result.toDict())
 
 # class to accept sign up info
 class SignupWindow(Screen):
@@ -86,10 +88,12 @@ class SignupWindow(Screen):
     isTutor = ObjectProperty(None)
 
     def checkbox_click(self, instance, value):
-        if value == True:
-            self.isTutor = True
-        else:
-            self.isTutor = False
+        print(value)
+        self.isTutor = value
+        #if value == True:
+        #    self.isTutor = True
+        #else:
+        #    self.isTutor = False
 
     def signup(self):
 
@@ -133,9 +137,13 @@ class LogDataWindow(Screen):
 
     def __init__(self, **kwargs):
         super(LogDataWindow, self).__init__(**kwargs)
+        #print("hi")
+        #print(self.instance == None)
         self.PM = PageManager()
         self.add_widget(self.PM)
-        self.instance = self
+        global logDataWindow
+        logDataWindow = self
+        #print(self.instance == None)
 
 
 # class for managing screens
@@ -143,7 +151,7 @@ class WindowManager(ScreenManager):
     pass
 
 
-Window.clearcolor = (0.95, 0.95, 0.95, 1)
+Window.clearcolor = (1, 1, 1, 1)
 # kv file
 kv = Builder.load_file('registration.kv')
 sm = WindowManager()
