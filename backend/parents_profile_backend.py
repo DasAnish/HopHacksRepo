@@ -1,5 +1,6 @@
 from .dataObjects import Parent
 from .connect_with_mongo import Mongo
+from typing import Dict
 
 
 class ParentsProfileBackend:

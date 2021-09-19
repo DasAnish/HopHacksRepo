@@ -48,3 +48,11 @@ class Backend:
     @staticmethod
     def reject(match):
         TutorHomeBackend.getInstance().reject(match)
+
+    @staticmethod
+    def getImageKey(imagePath: str):
+        return TutorProfileBackend.getInstance().getImageKey(imagePath)
+
+    @staticmethod
+    def getImageBytes(imageKey):
+        return TutorProfileBackend.getInstance().getImageBytes(imageKey)
