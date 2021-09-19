@@ -11,6 +11,8 @@ from kivy.core.window import Window
 import hashlib
 from kivy.uix.checkbox import CheckBox
 from backend import Backend
+from main import PageManager
+from kivy.config import Config
 
 
 
@@ -125,7 +127,9 @@ class SignupWindow(Screen):
 
 # class to display validation result
 class LogDataWindow(Screen):
-    pass
+    def __init__(self, **kwargs):
+        super(LogDataWindow, self).__init__(**kwargs)
+        self.add_widget(PageManager())
 
 
 # class for managing screens
@@ -153,4 +157,5 @@ class LoginMain(App):
 
 # driver function
 if __name__ == "__main__":
+    Config.set('graphics', 'resizable', False)
     LoginMain().run()

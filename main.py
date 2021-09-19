@@ -1,4 +1,4 @@
-from backend import Backend, Tutor
+from backend import Backend, Tutor, Parent
 from kivy.app import App
 from kivy.base import Builder
 from kivy.uix.widget import Widget
@@ -18,6 +18,9 @@ Builder.load_file("kivyFiles/main.kv")
 photoHeight = 550
 photoWidth = 340
 
+parent = {'username':'kelvincfleung', 'password':'hello123', 'fname':'Kelvin', 'lname':'Leung1', 'rateMin':10, 'rateMax':20, 'subject':'maths', 'level':1}
+parentObj = Parent('61467ec2c2c5a2e917994d69')
+parentObj.updateInfo(parent)
 
 class PersonSingleTon:
 
@@ -36,7 +39,7 @@ class PersonSingleTon:
 
         PersonSingleTon.__instance = self
 
-        self.person = None
+        self.person = parentObj
         self.isTutor = False
 
 
@@ -55,8 +58,9 @@ def AddTextWithBack(widget, str, pos):
 
 
 class ChangePageButton(Button):
-    def __init__(self, page, pos, size, source, color=(1, 1, 1), **kwargs):
+    def __init__(self, PM, page, pos, size, source, color=(1, 1, 1), **kwargs):
         super(ChangePageButton, self).__init__(**kwargs)
+        self.PM = PM
         self.page = page
         self.pos = pos
         self.size = size
@@ -66,9 +70,7 @@ class ChangePageButton(Button):
         self.bind(on_press=self.pressed)
 
     def pressed(self, instance):
-        app = App.get_running_app()
-        PM = app.root
-        PM.goToPage(self.page)
+        self.PM.goToPage(self.page)
 
 
 class FadeBetweenButton(Button):
@@ -198,8 +200,8 @@ class ParentHomePage(Widget):
         #self.yesButton = Button(pos=(Window.width-90, 100), size=(70, 70), background_normal="images/yesButton.png",
         #                  background_down="images/yesButtonDown.png")
 
-        self.card = self.nextCard()
         self.nextTutor = Backend.nextTutor()
+        self.card = self.nextCard()
 
     def nextCard(self):
         # next tutor function
@@ -389,6 +391,7 @@ class PageManager(Widget):
 
     def __init__(self, **kwargs):
         super(PageManager, self).__init__(**kwargs)
+        Window.size = (360, 640)
         self.isTutor = False#isinstance(person, Tutor)
         self.size = (360, 640)
         self.currentPage = 0 + self.isTutor
@@ -399,13 +402,13 @@ class PageManager(Widget):
 
         self.add_widget(self.pages[self.currentPage])
 
-        self.homeButton = ChangePageButton(PageManager.HOME + self.isTutor, (10, 15), (50, 50), "images/homeButton.png")
+        self.homeButton = ChangePageButton(self, PageManager.HOME + self.isTutor, (10, 15), (50, 50), "images/homeButton.png")
         self.add_widget(self.homeButton)
 
-        self.matchesButton = ChangePageButton(PageManager.MATCHES + self.isTutor, (Window.width/2 - 25, 15), (50, 50), "images/starButton.png")
+        self.matchesButton = ChangePageButton(self, PageManager.MATCHES + self.isTutor, (Window.width/2 - 25, 15), (50, 50), "images/starButton.png")
         self.add_widget(self.matchesButton)
 
-        self.profileButton = ChangePageButton(PageManager.PROFILE + self.isTutor, (self.width - 60, 15), (50, 50), "images/profileButton.png")
+        self.profileButton = ChangePageButton(self, PageManager.PROFILE + self.isTutor, (self.width - 60, 15), (50, 50), "images/profileButton.png")
         self.add_widget(self.profileButton)
 
     def goToPage(self, page):
@@ -420,6 +423,7 @@ class MainApp(App):
 
 
 if __name__ == '__main__':
-    Window.size = (360, 640)
+    Config.set('graphics', 'width', '360')
+    Config.set('graphics', 'height', '640')
     Config.set('graphics', 'resizable', False)
     MainApp().run()
