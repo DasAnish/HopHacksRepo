@@ -11,10 +11,11 @@ from kivy.config import Config
 from kivy.graphics import *
 from kivy.animation import *
 from kivy.graphics import RoundedRectangle
-
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.textinput import TextInput
 from backend import Backend, Match, Level
 
-Builder.load_file("kivyFiles/main.kv")
+#Builder.load_file("kivyFiles/main.kv")
 photoHeight = 550
 photoWidth = 340
 
@@ -323,10 +324,49 @@ class TutorHomePage(Widget):
             startPos = (startPos[0], startPos[1] - height - pad)
             self.add_widget(self.requests[i])
 
+
 # KELVIN GO HERE
+#360*640
 class ParentProfile(Widget):
     def __init__(self, **kwargs):
         super(ParentProfile, self).__init__(**kwargs)
+        self.usernameLabel = Label(text="Username:", color=(0, 0, 0), pos=(30, 550), font_size="18sp")
+        self.usernameText = TextInput(text='')
+        self.passwordLabel = Label(text="Password:", color=(0, 0, 0), pos=(30, 550), font_size="18sp")
+        self.passwordText = TextInput()
+        self.phoneNumLabel = Label(text="Phone:", color=(0, 0, 0), pos=(30, 550), font_size="18sp")
+        self.phoneNumText = TextInput()
+        self.fnameLabel = Label(text="First Name:", color=(0, 0, 0), pos=(30, 550), font_size="18sp")
+        self.fnameText = TextInput()
+        self.lnameLabel = Label(text="Last Name:", color=(0, 0, 0), pos=(30, 550), font_size="18sp")
+        self.lnameText = TextInput()
+        self.subjectLabel = Label(text="Subject:", color=(0, 0, 0), pos=(30, 550), font_size="18sp")
+        self.subjectText = TextInput()
+        self.rateMinLabel = Label(text="Minimum Rate:", color=(0, 0, 0), pos=(30, 550), font_size="18sp")
+        self.rateMinText = TextInput()
+        self.rateMaxLabel = Label(text="Maximum Rate:", color=(0, 0, 0), pos=(30, 550), font_size="18sp")
+        self.rateMaxText = TextInput()
+        self.levelLabel = Label(text="Tutee Level:", color=(0, 0, 0), pos=(30, 550), font_size="18sp")
+        self.levelText = TextInput()
+        self.add_widget(self.usernameLabel)
+        self.add_widget(self.usernameText)
+        self.add_widget(self.passwordLabel)
+        self.add_widget(self.passwordText)
+        self.add_widget(self.phoneNumLabel)
+        self.add_widget(self.phoneNumText)
+        self.add_widget(self.fnameLabel)
+        self.add_widget(self.fnameText)
+        self.add_widget(self.lnameLabel)
+        self.add_widget(self.lnameText)
+        self.add_widget(self.subjectLabel)
+        self.add_widget(self.subjectText)
+        self.add_widget(self.rateMinLabel)
+        self.add_widget(self.rateMinText)
+        self.add_widget(self.rateMaxLabel)
+        self.add_widget(self.rateMaxText)
+        self.add_widget(self.levelLabel)
+        self.add_widget(self.levelText)
+
 
 class TutorProfile(Widget):
     def __init__(self, **kwargs):
