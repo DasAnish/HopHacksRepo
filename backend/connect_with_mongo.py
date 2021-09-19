@@ -1,4 +1,5 @@
 import pymongo
+from gridfs import GridFS
 
 
 class Mongo:
@@ -24,5 +25,6 @@ class Mongo:
                         tlsCertificateKeyFile='X509-cert-6197396631610520216.pem')
 
         self.parentsData = self.client['HopHacks']['Parents']
-        self.tutorsData = self.client['HopHacks']['Tutors']
+        self.tutorsData  = self.client['HopHacks']['Tutors']
         self.matchesData = self.client['HopHacks']['Matches']
+        self.imagesData  = GridFS(self.client['HopHacks'], 'Images')

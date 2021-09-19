@@ -31,3 +31,16 @@ class TutorProfileBackend:
 
         tutorsData.update_one(query, {'$set': temp})
 
+    def getImageKey(self, imagePath):
+        with open(imagePath, 'rb') as f:
+            output = f.read()
+
+        mongo = Mongo.getInstance().imagesData
+        return mongo.put(output)
+
+    def getImageBytes(self, imageKey):
+
+        mongo = Mongo.getInstance().imagesData
+        return mongo.get(imageKey).read()
+
+
