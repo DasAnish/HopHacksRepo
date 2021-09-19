@@ -11,9 +11,13 @@ from kivy.config import Config
 from kivy.graphics import *
 from kivy.animation import *
 from kivy.graphics import RoundedRectangle
-from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.gridlayout import GridLayout
 from kivy.uix.textinput import TextInput
+from kivy.uix.slider import Slider
+from kivy.uix.togglebutton import ToggleButton
+from kivy.uix.popup import Popup
 from backend import Backend, Match, Level
+import os
 
 #Builder.load_file("kivyFiles/main.kv")
 photoHeight = 550
@@ -329,43 +333,119 @@ class TutorHomePage(Widget):
 #360*640
 class ParentProfile(Widget):
     def __init__(self, **kwargs):
+        person = PersonSingleTon.getInstance().person
+
         super(ParentProfile, self).__init__(**kwargs)
-        self.usernameLabel = Label(text="Username:", color=(0, 0, 0), pos=(30, 550), font_size="18sp")
-        self.usernameText = TextInput(text='')
-        self.passwordLabel = Label(text="Password:", color=(0, 0, 0), pos=(30, 550), font_size="18sp")
-        self.passwordText = TextInput()
-        self.phoneNumLabel = Label(text="Phone:", color=(0, 0, 0), pos=(30, 550), font_size="18sp")
-        self.phoneNumText = TextInput()
-        self.fnameLabel = Label(text="First Name:", color=(0, 0, 0), pos=(30, 550), font_size="18sp")
-        self.fnameText = TextInput()
-        self.lnameLabel = Label(text="Last Name:", color=(0, 0, 0), pos=(30, 550), font_size="18sp")
-        self.lnameText = TextInput()
-        self.subjectLabel = Label(text="Subject:", color=(0, 0, 0), pos=(30, 550), font_size="18sp")
-        self.subjectText = TextInput()
-        self.rateMinLabel = Label(text="Minimum Rate:", color=(0, 0, 0), pos=(30, 550), font_size="18sp")
-        self.rateMinText = TextInput()
-        self.rateMaxLabel = Label(text="Maximum Rate:", color=(0, 0, 0), pos=(30, 550), font_size="18sp")
-        self.rateMaxText = TextInput()
-        self.levelLabel = Label(text="Tutee Level:", color=(0, 0, 0), pos=(30, 550), font_size="18sp")
-        self.levelText = TextInput()
-        self.add_widget(self.usernameLabel)
-        self.add_widget(self.usernameText)
-        self.add_widget(self.passwordLabel)
-        self.add_widget(self.passwordText)
-        self.add_widget(self.phoneNumLabel)
-        self.add_widget(self.phoneNumText)
-        self.add_widget(self.fnameLabel)
-        self.add_widget(self.fnameText)
-        self.add_widget(self.lnameLabel)
-        self.add_widget(self.lnameText)
-        self.add_widget(self.subjectLabel)
-        self.add_widget(self.subjectText)
-        self.add_widget(self.rateMinLabel)
-        self.add_widget(self.rateMinText)
-        self.add_widget(self.rateMaxLabel)
-        self.add_widget(self.rateMaxText)
-        self.add_widget(self.levelLabel)
-        self.add_widget(self.levelText)
+        self.grid = GridLayout(cols=2, pos=(0,80), size=(360,520), spacing=(0,10), padding=(0,0,20,0))
+
+        self.profileLabel = Label(text="Profile Picture:", color=(0, 0, 0), font_size="18sp",width=90, size_hint_y=6)
+        self.profilepicture = Button(background_normal='images/kelvin1.png')
+        self.profilepicture.bind(on_press=self.pictureChanger)
+
+        self.usernameLabel = Label(text="Username:", color=(0, 0, 0), font_size="18sp",width=90)
+        self.usernameText = TextInput(text=person.username,background_color=(.95, .95, .95, 1))
+
+        self.passwordLabel = Label(text="Password:", color=(0, 0, 0), font_size="18sp",width=90)
+        self.passwordText = TextInput(text=person.password, background_color=(.95, .95, .95, 1))
+
+        self.phoneNumLabel = Label(text="Phone:", color=(0, 0, 0),  font_size="18sp",width=90)
+        self.phoneNumText = TextInput(text=str(person.phoneNum), background_color=(.95, .95, .95, 1))
+
+        self.fnameLabel = Label(text="First Name:", color=(0, 0, 0), font_size="18sp",width=90)
+        self.fnameText = TextInput(text=person.fname, background_color=(.95, .95, .95, 1))
+
+        self.lnameLabel = Label(text="Last Name:", color=(0, 0, 0), font_size="18sp",width=90)
+        self.lnameText = TextInput(text=person.lname, background_color=(.95, .95, .95, 1))
+
+        self.subjectLabel = Label(text="Subject:", color=(0, 0, 0), font_size="18sp",width=90)
+        self.subjectText = GridLayout(cols=2)
+        self.subjectbtn1 = ToggleButton(text='Maths', group='subject', )
+        self.subjectbtn2 = ToggleButton(text='English', group='subject', state='down')
+
+        self.rateMinLabel = Label(text="Minimum Rate:", color=(0, 0, 0),  font_size="18sp",width=90)
+        self.rateMinText = GridLayout(cols=1)
+        self.rateMinTextSlider = Slider(value_track= True, min=0, max=100, step=1, value=person.rateMin,
+                                        value_track_color=(0,0.5,0.5,0.7))
+        self.rateMinTextSlider.bind(value=self.onValueMin)
+        self.rateMinTextText = Label(text='£'+str(self.rateMinTextSlider.value), color=(0, 0, 0), font_size="18sp")
+
+        self.rateMaxLabel = Label(text="Maximum Rate:", color=(0, 0, 0),  font_size="18sp",width=90)
+        self.rateMaxText = GridLayout(cols=1)
+        self.rateMaxTextSlider = Slider(value_track= True, min=0, max=100, step=1, value=person.rateMax,
+                                        value_track_color=(0,0.5,0.5,0.7))
+        self.rateMaxTextText = Label(text='£'+str(self.rateMaxTextSlider.value), color=(0, 0, 0),  font_size="18sp")
+        self.rateMaxTextSlider.bind(value=self.onValueMax)
+
+        self.levelLabel = Label(text="Tutee Level:", color=(0, 0, 0), font_size="18sp",width=90)
+        self.levelText = GridLayout(cols=2)
+        self.levelbtn1 = ToggleButton(text='GCSE', group='level', )
+        self.levelbtn2 = ToggleButton(text='A-LEVEL', group='level', state='down')
+
+        self.add_widget(self.grid)
+        self.grid.add_widget(self.profileLabel)
+        self.grid.add_widget(self.profilepicture)
+        self.grid.add_widget(self.usernameLabel)
+        self.grid.add_widget(self.usernameText)
+        self.grid.add_widget(self.passwordLabel)
+        self.grid.add_widget(self.passwordText)
+        self.grid.add_widget(self.phoneNumLabel)
+        self.grid.add_widget(self.phoneNumText)
+        self.grid.add_widget(self.fnameLabel)
+        self.grid.add_widget(self.fnameText)
+        self.grid.add_widget(self.lnameLabel)
+        self.grid.add_widget(self.lnameText)
+        self.grid.add_widget(self.subjectLabel)
+        self.grid.add_widget(self.subjectText)
+        self.subjectText.add_widget(self.subjectbtn1)
+        self.subjectText.add_widget(self.subjectbtn2)
+        self.grid.add_widget(self.rateMinLabel)
+        self.grid.add_widget(self.rateMinText)
+        self.rateMinText.add_widget(self.rateMinTextSlider)
+        self.rateMinText.add_widget(self.rateMinTextText)
+        self.grid.add_widget(self.rateMaxLabel)
+        self.grid.add_widget(self.rateMaxText)
+        self.rateMaxText.add_widget(self.rateMaxTextSlider)
+        self.rateMaxText.add_widget(self.rateMaxTextText)
+        self.grid.add_widget(self.levelLabel)
+        self.grid.add_widget(self.levelText)
+        self.levelText.add_widget(self.levelbtn1)
+        self.levelText.add_widget(self.levelbtn2)
+
+    def pictureChanger(self, popup):
+        popup = Popup(title='Change your profile', size_hint=(None, None), size=(300, 400), auto_dismiss=False)
+        temp_cont = GridLayout(cols=1,spacing=(0,20), padding=(5,0,5,0))
+        text = Label(text='Please enter the path of your new picture.')
+        text_input = TextInput(text='')
+        btn_choice = GridLayout(cols=2,size_hint_y=0.4)
+        btn1 = Button(text='Confirm')
+        btn2 = Button(text='Cancel')
+        btn_choice.add_widget(btn1)
+        btn_choice.add_widget(btn2)
+        temp_cont.add_widget(text)
+        temp_cont.add_widget(text_input)
+        temp_cont.add_widget(btn_choice)
+        btn1.bind(on_press=self.pictureChangerCheck(popup, text_input))
+        btn2.bind(on_press=popup.dismiss)
+        popup.content = temp_cont
+        popup.open()
+
+    @staticmethod
+    def pictureChangerCheck(popup, check):
+        if os.path.exists(check.text):
+            imageKey = Backend.getImageKey(check.text)
+            tutor: Tutor = PersonSingleTon.getInstance().person
+            tutor.picture = imageKey
+
+            imageBytes = Backend.getImageBytes(imageKey)
+            with open('images/temp.png', 'wb') as f:
+                f.write(imageBytes)
+        popup.dismiss()
+
+    def onValueMin(self, instance, value):
+        self.rateMinTextText.text = '£' + str(int(value))
+
+    def onValueMax(self, instance, value):
+        self.rateMaxTextText.text = '£' + str(int(value))
 
 
 class TutorProfile(Widget):
