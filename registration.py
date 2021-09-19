@@ -1,4 +1,5 @@
 import numpy as np
+from backend import Tutor
 from kivy.app import App
 from kivy.uix.widget import Widget
 from kivy.uix.screenmanager import ScreenManager, Screen
@@ -74,6 +75,8 @@ class LoginWindow(Screen):
             self.username.text = ""
             self.pwd.text = ""
             logDataWindow.PM.updateUser(result)
+            print(isinstance(result, Tutor))
+            print(result.toDict())
 
 # class to accept sign up info
 class SignupWindow(Screen):

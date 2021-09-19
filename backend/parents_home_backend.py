@@ -50,7 +50,7 @@ class ParentsHomeBackend:
         mongo = Mongo.getInstance()
         for obj in mongo.matchesData.find(query):
             tutor_id = obj['tutor_id']
-            tutorInfo = mongo.tutorsData.find_one({'_id':tutor_id})[0]
+            tutorInfo = mongo.tutorsData.find_one({'_id':tutor_id})
             tutorObj = Tutor(tutor_id)
             tutorObj.updateInfo(tutorInfo)
 

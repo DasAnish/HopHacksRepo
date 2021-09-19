@@ -14,6 +14,10 @@ from kivy.graphics import RoundedRectangle
 
 from backend import Backend, Match, Level
 
+tutorHomePage = None
+tutorMatchesPage = None
+parentMatchesPage = None
+
 Builder.load_file("kivyFiles/main.kv")
 photoHeight = 550
 photoWidth = 340
@@ -114,14 +118,16 @@ class AcceptCardButton(Button):
         self.bind(on_press=self.pressed)
         self.tutorObj = None
     def pressed(self, instance):
-        self.page.nextCard()
-        # send match request
-
-        parentObj = PersonSingleTon.getInstance()
+        parentObj = PersonSingleTon.getInstance().person
 
         match = Match(parentObj, self.tutorObj)
 
         Backend.sendLike(match)
+
+        self.page.nextCard()
+        # send match request
+
+
 
 
 class RejectCardButton(Button):
@@ -157,6 +163,7 @@ class AcceptRequestButton(Button):
         # Confirm tutoring
         Backend.accept(self.match)
         # accept match
+        tutorMatchesPage.updateMatches()
 
 
 class RejectRequestButton(Button):
@@ -178,6 +185,7 @@ class RejectRequestButton(Button):
         # Reject tutoring
         # reject match
         Backend.reject(self.match)
+        tutorMatchesPage.updateMatches()
 
 
 class Card(Widget):
@@ -219,6 +227,7 @@ class ParentHomePage(Widget):
         nextItem = next(self.nextTutor, None)
         self.yesButton.tutorObj = nextItem
         self.noButton.tutorObj = nextItem
+        print(nextItem.id, nextItem.fname)
 
         showYesNo = True
 
@@ -287,6 +296,8 @@ class ParentHomePage(Widget):
 class TutorHomePage(Widget):
     def __init__(self, **kwargs):
         super(TutorHomePage, self).__init__(**kwargs)
+        global tutorHomePage
+        tutorHomePage = self
         self.add_widget(Label(text="Requests", color=(0, 0, 0), pos=(60, 550), font_size="40sp"))
         self.requests = []
         #: get requested matched
@@ -320,8 +331,10 @@ class TutorHomePage(Widget):
             return output
 
         self.requestInfo = [convertMatchToString(i) for i in self.listOfMatches]
+        print(self.requestInfo)
 
     def updateRequests(self):
+        self.updateRequestsInfo()
         for request in self.requests:
             self.remove_widget(request)
         pad = 10
@@ -350,15 +363,36 @@ class TutorProfile(Widget):
 class ParentMatches(Widget):
     def __init__(self, **kwargs):
         super(ParentMatches, self).__init__(**kwargs)
+        global parentMatchesPage
+        parentMatchesPage = self
         self.add_widget(Label(text="Tutors", color=(0, 0, 0), pos=(40, 550), font_size="40sp"))
         self.matches = []
         # TODO: get matched parents
-        self.matchInfo = [
-            "Kelvin Leung\nBA Mathematics, Cambridge\nTutors in:\n- Maths,\n- Physics,\n- Computer science"
-            "\n£30+/hr\n\nContact at:\n077777888999, leung@gmail.com"]
+
+        # self.matchInfo = [
+        #     "Kelvin Leung\nBA Mathematics, Cambridge\nTutors in:\n- Maths,\n- Physics,\n- Computer science"
+        #     "\n£30+/hr\n\nContact at:\n077777888999, leung@gmail.com"]
         self.updateMatches()
 
+    def updateMatchInfo(self):
+        parent = PersonSingleTon.getInstance().person
+        listOfMatches = Backend.getMatchesParent(parent, Match.ACCEPTED)
+
+        def matchToString(match: Match):
+            tutor = match.tutor
+            subjects = '-' + '\n-'.join(tutor.subject)
+            output = (f"{tutor.fname} {tutor.lname}\n"
+                      f"{tutor.qualification}\n"
+                      f"Tutors in:\n{subjects}\n"
+                      f"£{tutor.rateMin}+/hr\n\n"
+                      f"Contact at:\n{tutor.phoneNum}")
+            return output
+
+        self.matchInfo = [matchToString(m) for m in listOfMatches]
+        print(self.matchInfo)
+
     def updateMatches(self):
+        self.updateMatchInfo()
         for match in self.matches:
             self.remove_widget(self.matches)
         pad = 10
@@ -376,9 +410,18 @@ class ParentMatches(Widget):
 class TutorMatches(Widget):
     def __init__(self, **kwargs):
         super(TutorMatches, self).__init__(**kwargs)
+        global tutorMatchesPage
+        tutorMatchesPage = self
         self.add_widget(Label(text="Tutees", color=(0, 0, 0), pos=(40, 550), font_size="40sp"))
         self.matches = []
         # TODO: get matched tutors
+
+
+        self.matchInfo = ["Villar\nKS3 Mathematics, £5/hr\n\nContact at:\n077777888999, villar@gmail.com", "Kiln\nKS2 English, £600/hr\n\nContact at:\n077777888999, kiln@gmail.com",
+                          "Das\nGCSE Spanish, £60/hr\n\nContact at:\n077777888999, das@gmail.com", "Samuels\nA-Level Chemistry, £30/hr\n\nContact at:\n077777888999, samuels@gmail.com"]
+        self.updateMatches()
+
+    def updateMatchInfo(self):
         tutor = PersonSingleTon.getInstance().person
         listOfMatches = Backend.getMatchesTutor(tutor, Match.ACCEPTED)
 
@@ -402,12 +445,11 @@ class TutorMatches(Widget):
             return output
 
         self.matchInfo = [matchToString(m) for m in listOfMatches]
-
-        # self.matchInfo = ["Villar\nKS3 Mathematics, £5/hr\n\nContact at:\n077777888999, villar@gmail.com", "Kiln\nKS2 English, £600/hr\n\nContact at:\n077777888999, kiln@gmail.com",
-        #                   "Das\nGCSE Spanish, £60/hr\n\nContact at:\n077777888999, das@gmail.com", "Samuels\nA-Level Chemistry, £30/hr\n\nContact at:\n077777888999, samuels@gmail.com"]
-        self.updateMatches()
+        print(self.matchInfo)
 
     def updateMatches(self):
+        self.updateMatchInfo()
+        print("match info: ", self.matchInfo)
         for match in self.matches:
             self.remove_widget(self.matches)
         pad = 10
@@ -459,6 +501,9 @@ class PageManager(Widget):
         PersonSingleTon.getInstance().person = person
         self.isTutor = isinstance(person, Tutor)
         self.goToPage(0)
+        tutorHomePage.updateRequests()
+        tutorMatchesPage.updateMatches()
+        parentMatchesPage.updateMatches()
         #self.currentPage += self.isTutor
 
 
