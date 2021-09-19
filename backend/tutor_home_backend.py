@@ -20,7 +20,7 @@ class TutorHomeBackend:
         else:
             TutorHomeBackend.__instance = self
 
-    def getMatches(self, tutor: Tutor, statusOfMatch):
+    def getMatchesTutor(self, tutor: Tutor, statusOfMatch):
 
         query = {'tutor_id': tutor.id,
                  'status': statusOfMatch}

@@ -338,9 +338,24 @@ class ParentMatches(Widget):
         self.add_widget(Label(text="Tutors", color=(0, 0, 0), pos=(40, 550), font_size="40sp"))
         self.matches = []
         # TODO: get matched parents
-        self.matchInfo = [
-            "Kelvin Leung\nBA Mathematics, Cambridge\nTutors in:\n- Maths,\n- Physics,\n- Computer science"
-            "\n£30+/hr\n\nContact at:\n077777888999, leung@gmail.com"]
+        parent = PersonSingleTon.getInstance().person
+        listOfMatches = Backend.getMatchesParent(parent, Match.ACCEPTED)
+
+        def matchToString(match: Match):
+            tutor = match.tutor
+            subjects = '-' + '\n-'.join(tutor.subject)
+            output = (f"{tutor.fname} {tutor.lname}\n"
+                      f"{tutor.qualification}\n"
+                      f"Tutors in:\n{subjects}\n"
+                      f"£{tutor.rateMin}+/hr\n\n"
+                      f"Contact at:\n{tutor.phoneNum}")
+            return output
+
+        self.matchInfo = [matchToString(m) for m in listOfMatches]
+
+        # self.matchInfo = [
+        #     "Kelvin Leung\nBA Mathematics, Cambridge\nTutors in:\n- Maths,\n- Physics,\n- Computer science"
+        #     "\n£30+/hr\n\nContact at:\n077777888999, leung@gmail.com"]
         self.updateMatches()
 
     def updateMatches(self):
@@ -363,9 +378,33 @@ class TutorMatches(Widget):
         super(TutorMatches, self).__init__(**kwargs)
         self.add_widget(Label(text="Tutees", color=(0, 0, 0), pos=(40, 550), font_size="40sp"))
         self.matches = []
-        # TODO: get matched parents
-        self.matchInfo = ["Villar\nKS3 Mathematics, £5/hr\n\nContact at:\n077777888999, villar@gmail.com", "Kiln\nKS2 English, £600/hr\n\nContact at:\n077777888999, kiln@gmail.com",
-                          "Das\nGCSE Spanish, £60/hr\n\nContact at:\n077777888999, das@gmail.com", "Samuels\nA-Level Chemistry, £30/hr\n\nContact at:\n077777888999, samuels@gmail.com"]
+        # TODO: get matched tutors
+        tutor = PersonSingleTon.getInstance().person
+        listOfMatches = Backend.getMatches(tutor, Match.ACCEPTED)
+
+        def matchToString(match):
+            parent = match.parent
+
+            if parent.level == Level.ALEVEL:
+                level = 'A-Level'
+            elif parent.level == Level.GCSE:
+                level = 'GCSE'
+            elif parent.level == Level.KS3:
+                level = 'KS3'
+            else:
+                level = 'KS2'
+
+            output = (f"{parent.lname}\n"
+                      f"{level} {parent.subject}, £{parent.rateMax}/hr\n\n"
+                      f"Contact at:\n"
+                      f"{parent.phoneNum}")
+
+            return output
+
+        self.matchInfo = [matchToString(m) for m in listOfMatches]
+
+        # self.matchInfo = ["Villar\nKS3 Mathematics, £5/hr\n\nContact at:\n077777888999, villar@gmail.com", "Kiln\nKS2 English, £600/hr\n\nContact at:\n077777888999, kiln@gmail.com",
+        #                   "Das\nGCSE Spanish, £60/hr\n\nContact at:\n077777888999, das@gmail.com", "Samuels\nA-Level Chemistry, £30/hr\n\nContact at:\n077777888999, samuels@gmail.com"]
         self.updateMatches()
 
     def updateMatches(self):

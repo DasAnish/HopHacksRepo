@@ -10,6 +10,10 @@ from .dataObjects import *
 class Backend:
 
     @staticmethod
+    def getMatchesParent(parent, statusOfMatch):
+        return ParentsHomeBackend.getInstance().getMatchesParent(parent, statusOfMatch)
+
+    @staticmethod
     def getMatches(tutor, statusOfMatch):
         return TutorHomeBackend.getInstance().getMatches(tutor, statusOfMatch)
 
