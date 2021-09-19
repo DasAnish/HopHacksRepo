@@ -184,11 +184,11 @@ class SignInPage(Widget):
 class ParentHomePage(Widget):
     def __init__(self, **kwargs):
         super(ParentHomePage, self).__init__(**kwargs)
-        self.cards = [["images/kelvin1.png", ["Kelvin Leung", "BA Mathematics, Cambridge",
-                                               "Tutors in:\n- Maths,\n- Physics,\n- Computer science",
-                                               "For GCSE & A-Level students", "£30+/hr"]],
-                      ["images/businessMan.png", ["Coolvin Leung", "PhD Mathematics, Cambridge",
-                                              "Tutors in: \n- Nothing", "£'a lot'/hr"]]]
+        #self.cards = [["images/kelvin1.png", ["Kelvin Leung", "BA Mathematics, Cambridge",
+        #                                       "Tutors in:\n- Maths,\n- Physics,\n- Computer science",
+        #                                       "For GCSE & A-Level students", "£30+/hr"]],
+        #              ["images/businessMan.png", ["Coolvin Leung", "PhD Mathematics, Cambridge",
+        #                                      "Tutors in: \n- Nothing", "£'a lot'/hr"]]]
         self.card = None
 
         # Yes/no buttons
@@ -205,22 +205,22 @@ class ParentHomePage(Widget):
 
     def nextCard(self):
         # next tutor function
-        nextItem = next(self.nextTutor, next)
+        nextItem = next(self.nextTutor, None)
         self.yesButton.tutorObj = nextItem
         self.noButton.tutorObj = nextItem
 
         if not nextItem:
             #: Handle end of cards
-            pass
-
-        info = [f"{nextItem.fname} {nextItem.lname}",
-                nextItem.qualification,
-                f"Tutors in:\n" +'\n'.join(nextItem.subject),
-                f"£{nextItem.rateMin}+/hr"]
-
-        nextCardInfo = self.cards.pop(0)
-
-        image = nextCardInfo[0]
+            info = []
+            image = "images/businessMan.png"
+            print("no cards left")
+            #pass
+        else:
+            info = [f"{nextItem.fname} {nextItem.lname}",
+                    nextItem.qualification,
+                    f"Tutors in:\n" +'\n'.join(nextItem.subject),
+                    f"£{nextItem.rateMin}+/hr"]
+            image = "images/kelvin1.png"
 
         # Image formatting
         img = Image(source=image, allow_stretch=True, pos=(10, 80),
@@ -415,6 +415,9 @@ class PageManager(Widget):
         self.remove_widget(self.pages[self.currentPage])
         self.currentPage = page
         self.add_widget(self.pages[self.currentPage])
+
+    def updateUser(self, person):
+        PersonSingleTon.getInstance().person = person
 
 
 class MainApp(App):
