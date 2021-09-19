@@ -100,7 +100,7 @@ class Tutor(Person):
         self.id = id
 
         self.picture = None
-        self.qualification = []
+        self.qualification = ""
 
     def updateInfo(self, info: Dict):
         self.baseUpdateInfo(info)

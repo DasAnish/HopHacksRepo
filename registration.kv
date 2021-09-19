@@ -4,11 +4,11 @@
 
 <TextInput>
     background_normal: ''
-    background_color: .7, .7, .7, .85
+    background_color: .95, .95, .95, 1
 
 <Button>
     background_normal: ''
-    background_color: .7, .7, .7, .85
+    background_color: .95, .95, .95, 1
 
 # there are three screens
 WindowManager:
@@ -22,44 +22,57 @@ WindowManager:
     pwd : pwd
     FloatLayout:
         size: root.width, root.height
-        GridLayout:
-            pos_hint : {"x":0.05, "top": 1}
-            cols : 2
-            Label:
-                text: 'Please tick this box if you are a tutor'
-            CheckBox:
-                color : (0,0,0,1)
-                on_active: root.checkbox_click(self, self.active)
+        #GridLayout:
+        #    pos_hint : {"x":0.05, "top": 1}
+        #    cols : 2
+        #Label:
+        #    text: "TutorMatch"
+        #    size_hint : 0.8, 0.2
+        #    pos_hint : {"x" : 0.10, "top" : 0.95}
+        #    font_size : "60sp"
+        Image:
+            source: "images/logo.png"
+            pos_hint : {"x" : 0, "top" : 0.95}
+            size_hint : 1.0, 0.3
         Label:
-            text : "USERNAME: "
-            size_hint : 0.2, 0.06
-            pos_hint : {"x":0.23, "top":0.85}
+            text: 'Are you a Tutor?'
+            size_hint : 0.4, 0.06
+            pos_hint : {"x" : 0.25, "top" : 0.45}
+        CheckBox:
+            color : (0,0,0,1)
+            size_hint : 0.06, 0.06
+            pos_hint : {"x" : 0.65, "top" : 0.45}
+            on_active: root.checkbox_click(self, self.active)
+        Label:
+            text : "Username: "
+            size_hint : 0.1, 0.06
+            pos_hint : {"x":0.20, "top":0.65}
         TextInput:
             id : username
             multiline :False
-            size_hint : 0.3, 0.06
-            pos_hint : {"x" : 0.45, "top" : 0.85}
+            size_hint : 0.4, 0.06
+            pos_hint : {"x" : 0.45, "top" : 0.65}
         Label:
-            text : "PASSWORD: "
-            size_hint : 0.2, 0.06
-            pos_hint : {"x" : 0.23, "top" : 0.7}
+            text : "Password: "
+            size_hint : 0.1, 0.06
+            pos_hint : {"x" : 0.20, "top" : 0.55}
         TextInput:
             id : pwd
             password  : True
             multiline :False
-            size_hint : 0.3, 0.06
-            pos_hint : {"x" : 0.45, "top" : 0.7}
+            size_hint : 0.4, 0.06
+            pos_hint : {"x" : 0.45, "top" : 0.55}
         Button:
             text : "Create an account"
-            size_hint : 0.4, 0.1
-            pos_hint : {"x" : 0.3, "top" : 0.2}
+            size_hint : 0.6, 0.06
+            pos_hint : {"x" : 0.2, "top" : 0.2}
             on_release:
                 app.root.current = 'signup'
                 root.manager.transition.direction = "left"
         Button:
-            text : "LOGIN"
-            size_hint : 0.3, 0.1
-            pos_hint : {"x" : 0.35, "top" : 0.35}
+            text : "Login"
+            size_hint : 0.6, 0.06
+            pos_hint : {"x" : 0.2, "top" : 0.27}
             on_release:
                 root.validate()
                 root.manager.transition.direction = "up"
