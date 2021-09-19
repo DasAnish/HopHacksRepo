@@ -42,10 +42,16 @@ class TutorHomeBackend:
 
         return matchObj
 
-    def accept(self, match):
-        raise Exception("not implemented")
+    def accept(self, match: Match):
 
-    def reject(self, match):
-        raise Exception("not implemented")
+        query = {'_id':match.id}
+        matchesData = Mongo.getInstance().matchesData
+        matchesData.update_one({query}, {'$set': {'status': Match.ACCEPTED}})
+
+    def reject(self, match: Match):
+
+        query = {'_id':match.id}
+        matchesData = Mongo.getInstance().matchesData
+        matchesData.update_one({query}, {'$set': {'status': Match.ACCEPTED}})
 
 

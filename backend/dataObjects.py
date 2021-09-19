@@ -1,4 +1,5 @@
 import abc
+from typing import Dict
 
 
 class Level:
@@ -20,7 +21,7 @@ class Person:
         self.phoneNum = 0
         self.level = -1
 
-    def baseUpdateInfo(self, info):
+    def baseUpdateInfo(self, info: Dict) -> None:
         if 'username' in info:
             self.username = info['username']
 
@@ -51,7 +52,7 @@ class Person:
         if 'level' in info:
             self.level = info['level']
 
-    def baseToDict(self):
+    def baseToDict(self) -> Dict:
         output = {
             "username": self.username,
             "password": self.password,
@@ -68,11 +69,11 @@ class Person:
         return output
 
     @abc.abstractmethod
-    def updateInfo(self, info):
+    def updateInfo(self, info: Dict) -> None:
         pass
 
     @abc.abstractmethod
-    def toDict(self):
+    def toDict(self) -> None:
         pass
 
 
@@ -82,10 +83,10 @@ class Parent(Person):
         Person.__init__(self)
         self.id = id
 
-    def updateInfo(self, info):
+    def updateInfo(self, info: Dict):
         self.baseUpdateInfo(info)
 
-    def toDict(self):
+    def toDict(self) -> Dict:
         output = self.baseToDict()
 
         output['_id'] = self.id
@@ -101,7 +102,7 @@ class Tutor(Person):
         self.picture = None
         self.qualification = []
 
-    def updateInfo(self, info):
+    def updateInfo(self, info: Dict):
         self.baseUpdateInfo(info)
 
         if 'picture' in info:
@@ -110,7 +111,7 @@ class Tutor(Person):
         if 'qualification' in info:
             self.qualification = info['qualification']
 
-    def toDict(self):
+    def toDict(self) -> Dict:
 
         output = self.baseToDict()
         output['picture'] = self.picture
@@ -124,7 +125,7 @@ class Match:
 
     REQUESTED, ACCEPTED, REJECTED = 0, 1, 2
 
-    def __init__(self, parent, tutor):
+    def __init__(self, parent: Parent, tutor: Parent):
         self.id = 0
 
         self.parent = parent
@@ -132,8 +133,8 @@ class Match:
 
         self.status = Match.REQUESTED
 
-    def accept(self):
+    def accept(self) -> None:
         self.status = Match.ACCEPTED
 
-    def reject(self):
+    def reject(self) -> None:
         self.status = Match.REJECTED

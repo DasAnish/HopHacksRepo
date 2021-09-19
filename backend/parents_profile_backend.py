@@ -20,7 +20,7 @@ class ParentsProfileBackend:
         else:
             ParentsProfileBackend.__instance = self
 
-    def updateInfo(self, parentObj: Parent, info):
+    def updateInfo(self, parentObj: Parent, info: Dict):
         mongo = Mongo.getInstance()
         query = {'_id': parentObj.id}
         parentsData = mongo.parentsData.find_one(query)[0]

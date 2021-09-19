@@ -1,5 +1,6 @@
 from .connect_with_mongo import Mongo
 from .dataObjects import Parent, Tutor
+from typing import Dict
 
 
 class SignInBackend:
@@ -20,7 +21,7 @@ class SignInBackend:
         else:
             SignInBackend.__instance = self
 
-    def signUpVerification(self, loginInfo):
+    def signUpVerification(self, loginInfo: Dict):
         print('signup', loginInfo)
         username = loginInfo['username']
         isTutor = loginInfo['isTutor']
@@ -49,7 +50,7 @@ class SignInBackend:
 
         return True
 
-    def signInVerification(self, loginInfo):
+    def signInVerification(self, loginInfo: Dict):
         username = loginInfo['username']
         password = loginInfo['password']
         isTutor = loginInfo['isTutor']

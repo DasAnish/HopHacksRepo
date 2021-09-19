@@ -1,5 +1,6 @@
 from .dataObjects import Tutor
 from .connect_with_mongo import Mongo
+from typing import Dict
 
 
 class TutorProfileBackend:
@@ -20,7 +21,7 @@ class TutorProfileBackend:
         else:
             TutorProfileBackend.__instance = self
 
-    def updateInfo(self, tutorObj: Tutor, info):
+    def updateInfo(self, tutorObj: Tutor, info: Dict):
         mongo = Mongo.getInstance()
         query = {'_id': tutorObj.id}
         tutorsData = mongo.tutorsData.find_one(query)[0]

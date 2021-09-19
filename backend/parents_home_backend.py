@@ -1,5 +1,6 @@
 from .connect_with_mongo import Mongo
 from .dataObjects import Match, Tutor
+from typing import Iterator
 
 
 class ParentsHomeBackend:
@@ -20,17 +21,17 @@ class ParentsHomeBackend:
         else:
             ParentsHomeBackend.__instance = self
 
-    def sendLike(self, match: Match):
+    def sendLike(self, match: Match) -> None:
         mongo = Mongo.getInstance()
         id = mongo.matchesData.insert_one({'parent_id': match.parent.id,
                                            'tutor_id': match.tutor.id,
                                            'status': Match.REQUESTED})
         match.id = id
 
-    def sendDislike(self, match: Match):
+    def sendDislike(self, match: Match) -> None:
         pass
 
-    def nextTutor(self):
+    def nextTutor(self) -> Iterator[Tutor]:
 
         mongo = Mongo.getInstance()
 
