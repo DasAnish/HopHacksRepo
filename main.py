@@ -299,7 +299,7 @@ class TutorHomePage(Widget):
     def updateRequestsInfo(self):
 
         personObj = PersonSingleTon.getInstance()
-        self.listOfMatches = Backend.getMatches(personObj.person, Match.REQUESTED)
+        self.listOfMatches = Backend.getMatchesTutor(personObj.person, Match.REQUESTED)
 
         def convertMatchToString(match):
             output = ''
@@ -380,7 +380,7 @@ class TutorMatches(Widget):
         self.matches = []
         # TODO: get matched tutors
         tutor = PersonSingleTon.getInstance().person
-        listOfMatches = Backend.getMatches(tutor, Match.ACCEPTED)
+        listOfMatches = Backend.getMatchesTutor(tutor, Match.ACCEPTED)
 
         def matchToString(match):
             parent = match.parent

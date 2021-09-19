@@ -14,8 +14,8 @@ class Backend:
         return ParentsHomeBackend.getInstance().getMatchesParent(parent, statusOfMatch)
 
     @staticmethod
-    def getMatches(tutor, statusOfMatch):
-        return TutorHomeBackend.getInstance().getMatches(tutor, statusOfMatch)
+    def getMatchesTutor(tutor, statusOfMatch):
+        return TutorHomeBackend.getInstance().getMatchesTutor(tutor, statusOfMatch)
 
     @staticmethod
     def nextTutor():

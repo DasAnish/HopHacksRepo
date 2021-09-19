@@ -60,4 +60,4 @@ class ParentsHomeBackend:
 
             listOfMatches.append(matchObj)
 
-        return matchObj
+        return listOfMatches
